@@ -1,0 +1,31 @@
+import { z } from "zod/v4";
+
+export const checkoutSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.email("Invalid email address"),
+  phone: z.string().min(1, "Phone number is required"),
+  addressLine1: z.string().min(1, "Address is required"),
+  addressLine2: z.string().optional(),
+  city: z.string().min(1, "City is required"),
+  state: z.string().optional(),
+  postalCode: z.string().optional(),
+  country: z.string().min(1, "Country is required"),
+  paymentMethod: z.enum(["stripe", "cod"]),
+  note: z.string().optional(),
+});
+
+export type CheckoutInput = z.infer<typeof checkoutSchema>;
+
+export const productSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  slug: z.string().min(1, "Slug is required"),
+  description: z.string().optional(),
+  price: z.number().int().min(1, "Price must be at least 1 cent"),
+  compareAtPrice: z.number().int().min(0).optional().nullable(),
+  categoryId: z.string().optional().nullable(),
+  status: z.enum(["active", "draft", "archived"]),
+  tags: z.string().optional(),
+});
+
+export type ProductInput = z.infer<typeof productSchema>;

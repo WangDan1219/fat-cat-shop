@@ -1,0 +1,191 @@
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { relations } from "drizzle-orm";
+
+export const categories = sqliteTable("categories", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const products = sqliteTable("products", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  price: integer("price").notNull(),
+  compareAtPrice: integer("compare_at_price"),
+  categoryId: text("category_id").references(() => categories.id),
+  status: text("status", { enum: ["active", "draft", "archived"] })
+    .notNull()
+    .default("draft"),
+  tags: text("tags"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const productImages = sqliteTable("product_images", {
+  id: text("id").primaryKey(),
+  productId: text("product_id")
+    .notNull()
+    .references(() => products.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  altText: text("alt_text"),
+  width: integer("width"),
+  height: integer("height"),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const customers = sqliteTable("customers", {
+  id: text("id").primaryKey(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  note: text("note"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const customerAddresses = sqliteTable("customer_addresses", {
+  id: text("id").primaryKey(),
+  customerId: text("customer_id")
+    .notNull()
+    .references(() => customers.id, { onDelete: "cascade" }),
+  addressLine1: text("address_line_1").notNull(),
+  addressLine2: text("address_line_2"),
+  city: text("city").notNull(),
+  state: text("state"),
+  postalCode: text("postal_code"),
+  country: text("country").notNull(),
+  isDefault: integer("is_default", { mode: "boolean" }).notNull().default(false),
+});
+
+export const orders = sqliteTable("orders", {
+  id: text("id").primaryKey(),
+  orderNumber: text("order_number").notNull().unique(),
+  customerId: text("customer_id").references(() => customers.id),
+  status: text("status", {
+    enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
+  })
+    .notNull()
+    .default("pending"),
+  paymentStatus: text("payment_status", {
+    enum: ["unpaid", "paid", "refunded"],
+  })
+    .notNull()
+    .default("unpaid"),
+  paymentMethod: text("payment_method", { enum: ["stripe", "cod"] }).notNull(),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  subtotal: integer("subtotal").notNull(),
+  shippingCost: integer("shipping_cost").notNull().default(0),
+  total: integer("total").notNull(),
+  note: text("note"),
+  shippingAddress: text("shipping_address"),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const orderLineItems = sqliteTable("order_line_items", {
+  id: text("id").primaryKey(),
+  orderId: text("order_id")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  productId: text("product_id").references(() => products.id),
+  title: text("title").notNull(),
+  quantity: integer("quantity").notNull(),
+  unitPrice: integer("unit_price").notNull(),
+  total: integer("total").notNull(),
+});
+
+export const orderStatusHistory = sqliteTable("order_status_history", {
+  id: text("id").primaryKey(),
+  orderId: text("order_id")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  fromStatus: text("from_status"),
+  toStatus: text("to_status").notNull(),
+  note: text("note"),
+  createdAt: text("created_at").notNull(),
+});
+
+export const analyticsEvents = sqliteTable("analytics_events", {
+  id: text("id").primaryKey(),
+  visitorId: text("visitor_id").notNull(),
+  event: text("event").notNull(),
+  path: text("path").notNull(),
+  referrer: text("referrer"),
+  userAgent: text("user_agent"),
+  createdAt: text("created_at").notNull(),
+});
+
+export const analyticsDailySummary = sqliteTable("analytics_daily_summary", {
+  id: text("id").primaryKey(),
+  date: text("date").notNull().unique(),
+  uniqueVisitors: integer("unique_visitors").notNull().default(0),
+  pageViews: integer("page_views").notNull().default(0),
+  ordersCount: integer("orders_count").notNull().default(0),
+  revenue: integer("revenue").notNull().default(0),
+});
+
+// Relations
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  products: many(products),
+}));
+
+export const productsRelations = relations(products, ({ one, many }) => ({
+  category: one(categories, {
+    fields: [products.categoryId],
+    references: [categories.id],
+  }),
+  images: many(productImages),
+}));
+
+export const productImagesRelations = relations(productImages, ({ one }) => ({
+  product: one(products, {
+    fields: [productImages.productId],
+    references: [products.id],
+  }),
+}));
+
+export const customersRelations = relations(customers, ({ many }) => ({
+  addresses: many(customerAddresses),
+  orders: many(orders),
+}));
+
+export const customerAddressesRelations = relations(customerAddresses, ({ one }) => ({
+  customer: one(customers, {
+    fields: [customerAddresses.customerId],
+    references: [customers.id],
+  }),
+}));
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  customer: one(customers, {
+    fields: [orders.customerId],
+    references: [customers.id],
+  }),
+  lineItems: many(orderLineItems),
+  statusHistory: many(orderStatusHistory),
+}));
+
+export const orderLineItemsRelations = relations(orderLineItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderLineItems.orderId],
+    references: [orders.id],
+  }),
+  product: one(products, {
+    fields: [orderLineItems.productId],
+    references: [products.id],
+  }),
+}));
+
+export const orderStatusHistoryRelations = relations(orderStatusHistory, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderStatusHistory.orderId],
+    references: [orders.id],
+  }),
+}));

@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-teal-primary: #108474;
+  --color-teal-dark: #0a6b5e;
+  --color-teal-light: #14a890;
+  --color-peach: #fdf0e8;
+  --color-peach-dark: #f5dece;
+  --color-warm-brown: #5c4033;
+  --color-warm-gray: #f7f5f3;
+  --color-cream: #fffaf5;
+
+  --font-sans: "Epilogue", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Comfortaa", cursive;
+
+  --shadow-clay: 6px 6px 12px rgba(92, 64, 51, 0.08), -2px -2px 8px rgba(255, 255, 255, 0.8);
+  --shadow-clay-hover: 8px 8px 16px rgba(92, 64, 51, 0.12), -3px -3px 10px rgba(255, 255, 255, 0.9);
+  --shadow-clay-pressed: 2px 2px 6px rgba(92, 64, 51, 0.1), -1px -1px 4px rgba(255, 255, 255, 0.6);
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-warm-brown);
+  font-family: var(--font-sans);
+}
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Remove 300ms tap delay on mobile */
+html {
+  touch-action: manipulation;
+}
+
+/* Focus ring for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--color-teal-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
