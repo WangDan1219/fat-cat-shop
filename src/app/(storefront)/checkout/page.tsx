@@ -11,6 +11,20 @@ export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [returningCustomer, setReturningCustomer] = useState<{
+    firstName: string;
+    lastName: string;
+    phone: string | null;
+    address: {
+      addressLine1: string;
+      addressLine2: string | null;
+      city: string;
+      state: string | null;
+      postalCode: string | null;
+      country: string;
+    } | null;
+  } | null>(null);
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(false);
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -64,6 +78,47 @@ export default function CheckoutPage() {
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleEmailBlur() {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(form.email)) return;
+
+    try {
+      const res = await fetch(
+        `/api/customers/lookup?email=${encodeURIComponent(form.email)}`,
+      );
+      const data = await res.json();
+
+      if (data.found) {
+        setReturningCustomer(data.customer);
+        setShowWelcomeBanner(true);
+      } else {
+        setReturningCustomer(null);
+        setShowWelcomeBanner(false);
+      }
+    } catch {
+      setReturningCustomer(null);
+      setShowWelcomeBanner(false);
+    }
+  }
+
+  function applySavedDetails() {
+    if (!returningCustomer) return;
+
+    setForm((prev) => ({
+      ...prev,
+      firstName: returningCustomer.firstName,
+      lastName: returningCustomer.lastName,
+      phone: returningCustomer.phone ?? prev.phone,
+      addressLine1: returningCustomer.address?.addressLine1 ?? prev.addressLine1,
+      addressLine2: returningCustomer.address?.addressLine2 ?? prev.addressLine2,
+      city: returningCustomer.address?.city ?? prev.city,
+      state: returningCustomer.address?.state ?? prev.state,
+      postalCode: returningCustomer.address?.postalCode ?? prev.postalCode,
+      country: returningCustomer.address?.country ?? prev.country,
+    }));
+    setShowWelcomeBanner(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -135,6 +190,7 @@ export default function CheckoutPage() {
                 type="email"
                 value={form.email}
                 onChange={(v) => updateField("email", v)}
+                onBlur={handleEmailBlur}
                 required
               />
               <InputField
@@ -144,6 +200,21 @@ export default function CheckoutPage() {
                 required
               />
             </div>
+
+            {showWelcomeBanner && returningCustomer && (
+              <div className="mt-4 flex items-center justify-between rounded-lg border border-teal-primary/20 bg-teal-primary/10 px-4 py-3">
+                <span className="text-sm font-medium text-teal-primary">
+                  Welcome back, {returningCustomer.firstName}!
+                </span>
+                <button
+                  type="button"
+                  onClick={applySavedDetails}
+                  className="rounded-md bg-teal-primary px-3 py-1 text-sm font-medium text-white transition-colors hover:bg-teal-dark"
+                >
+                  Use saved details
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="rounded-xl bg-white p-6 shadow-sm">
@@ -293,12 +364,14 @@ function InputField({
   label,
   value,
   onChange,
+  onBlur,
   type = "text",
   required = false,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  onBlur?: () => void;
   type?: string;
   required?: boolean;
 }) {
@@ -312,6 +385,7 @@ function InputField({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
         required={required}
         className="w-full rounded-lg border border-warm-brown/20 px-4 py-2 text-sm text-warm-brown outline-none transition-colors focus:border-teal-primary"
       />

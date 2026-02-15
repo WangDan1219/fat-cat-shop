@@ -1,7 +1,29 @@
 import { db } from "@/lib/db";
 import { products, orders, customers } from "@/lib/db/schema";
-import { count, eq, sql } from "drizzle-orm";
+import { count, eq, sql, inArray } from "drizzle-orm";
 import { formatPrice } from "@/lib/utils";
+import { DashboardOrderColumn } from "@/components/admin/dashboard-order-column";
+import { CancelledOrdersSection } from "@/components/admin/cancelled-orders-section";
+
+function toOrderCard(order: {
+  id: string;
+  orderNumber: string;
+  total: number;
+  createdAt: string;
+  status: string;
+  customer: { firstName: string; lastName: string } | null;
+}) {
+  return {
+    id: order.id,
+    orderNumber: order.orderNumber,
+    customerName: order.customer
+      ? `${order.customer.firstName} ${order.customer.lastName}`
+      : "Guest",
+    total: order.total,
+    createdAt: order.createdAt,
+    status: order.status,
+  };
+}
 
 export default async function AdminDashboardPage() {
   const [productCount] = await db.select({ count: count() }).from(products);
@@ -19,11 +41,53 @@ export default async function AdminDashboardPage() {
     { label: "Revenue", value: formatPrice(revenueResult.total) },
   ];
 
-  const recentOrders = await db.query.orders.findMany({
-    with: { customer: true },
-    orderBy: (orders, { desc }) => [desc(orders.createdAt)],
-    limit: 5,
-  });
+  const [unfulfilledOrders, shippedOrders, deliveredOrders, cancelledOrders] =
+    await Promise.all([
+      db.query.orders.findMany({
+        with: { customer: true },
+        where: inArray(orders.status, ["pending", "confirmed"]),
+        orderBy: (orders, { desc }) => [desc(orders.createdAt)],
+        limit: 5,
+      }),
+      db.query.orders.findMany({
+        with: { customer: true },
+        where: eq(orders.status, "shipped"),
+        orderBy: (orders, { desc }) => [desc(orders.createdAt)],
+        limit: 5,
+      }),
+      db.query.orders.findMany({
+        with: { customer: true },
+        where: eq(orders.status, "delivered"),
+        orderBy: (orders, { desc }) => [desc(orders.createdAt)],
+        limit: 5,
+      }),
+      db.query.orders.findMany({
+        with: { customer: true },
+        where: eq(orders.status, "cancelled"),
+        orderBy: (orders, { desc }) => [desc(orders.createdAt)],
+        limit: 5,
+      }),
+    ]);
+
+  const [unfulfilledCount, shippedCount, deliveredCount, cancelledCount] =
+    await Promise.all([
+      db
+        .select({ count: count() })
+        .from(orders)
+        .where(inArray(orders.status, ["pending", "confirmed"])),
+      db
+        .select({ count: count() })
+        .from(orders)
+        .where(eq(orders.status, "shipped")),
+      db
+        .select({ count: count() })
+        .from(orders)
+        .where(eq(orders.status, "delivered")),
+      db
+        .select({ count: count() })
+        .from(orders)
+        .where(eq(orders.status, "cancelled")),
+    ]);
 
   return (
     <div>
@@ -45,62 +109,32 @@ export default async function AdminDashboardPage() {
         ))}
       </div>
 
-      <div className="mt-8">
-        <h2 className="font-display text-lg font-bold text-warm-brown">
-          Recent Orders
-        </h2>
-        <div className="mt-4 overflow-hidden rounded-xl bg-white shadow-sm">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-warm-brown/10">
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-warm-brown/60">
-                  Order
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-warm-brown/60">
-                  Customer
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-warm-brown/60">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-warm-brown/60">
-                  Total
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-warm-brown/5">
-              {recentOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-warm-gray/50">
-                  <td className="px-6 py-4 text-sm font-medium text-teal-primary">
-                    {order.orderNumber}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-warm-brown">
-                    {order.customer
-                      ? `${order.customer.firstName} ${order.customer.lastName}`
-                      : "—"}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex rounded-full bg-peach px-2.5 py-0.5 text-xs font-medium capitalize text-warm-brown">
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right text-sm font-medium text-warm-brown">
-                    {formatPrice(order.total)}
-                  </td>
-                </tr>
-              ))}
-              {recentOrders.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="px-6 py-8 text-center text-sm text-warm-brown/50"
-                  >
-                    No orders yet
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+      <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <DashboardOrderColumn
+          title="Unfulfilled"
+          accentColor="amber"
+          orders={unfulfilledOrders.map(toOrderCard)}
+          count={unfulfilledCount[0].count}
+        />
+        <DashboardOrderColumn
+          title="Shipped"
+          accentColor="blue"
+          orders={shippedOrders.map(toOrderCard)}
+          count={shippedCount[0].count}
+        />
+        <DashboardOrderColumn
+          title="Delivered"
+          accentColor="green"
+          orders={deliveredOrders.map(toOrderCard)}
+          count={deliveredCount[0].count}
+        />
+      </div>
+
+      <div className="mt-4">
+        <CancelledOrdersSection
+          orders={cancelledOrders.map(toOrderCard)}
+          count={cancelledCount[0].count}
+        />
       </div>
     </div>
   );

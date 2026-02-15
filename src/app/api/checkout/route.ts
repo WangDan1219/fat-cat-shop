@@ -50,21 +50,35 @@ export async function POST(req: NextRequest) {
     }
 
     const now = new Date().toISOString();
-    const customerId = nanoid();
     const orderId = nanoid();
     const orderNumber = generateOrderNumber();
 
-    db.insert(customers)
-      .values({
-        id: customerId,
-        firstName: parsed.firstName,
-        lastName: parsed.lastName,
-        email: parsed.email,
-        phone: parsed.phone,
-        createdAt: now,
-        updatedAt: now,
-      })
-      .run();
+    const existingCustomer = db
+      .select({ id: customers.id })
+      .from(customers)
+      .where(eq(customers.email, parsed.email))
+      .get();
+
+    const customerId = existingCustomer ? existingCustomer.id : nanoid();
+
+    if (existingCustomer) {
+      db.update(customers)
+        .set({ updatedAt: now })
+        .where(eq(customers.id, existingCustomer.id))
+        .run();
+    } else {
+      db.insert(customers)
+        .values({
+          id: customerId,
+          firstName: parsed.firstName,
+          lastName: parsed.lastName,
+          email: parsed.email,
+          phone: parsed.phone,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .run();
+    }
 
     db.insert(customerAddresses)
       .values({

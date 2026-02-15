@@ -1,6 +1,6 @@
 # Fat Cat Shop
 
-A self-hosted e-commerce platform for small product catalogs, built with Next.js 15 and SQLite. Designed with a warm, playful cat-themed aesthetic (teal + peach claymorphism).
+A self-hosted e-commerce platform for small product catalogs, built with Next.js 15 and SQLite. Designed with a warm, playful aesthetic (teal + peach claymorphism). Sells handcrafted toys, plush animals, and accessories.
 
 ## Features
 
@@ -8,16 +8,19 @@ A self-hosted e-commerce platform for small product catalogs, built with Next.js
 - **Product Catalog** - Responsive grid with category support, pricing with discount display
 - **Product Detail** - Image gallery, breadcrumbs, tags, Add to Cart
 - **Shopping Cart** - Zustand store with localStorage persistence, quantity controls
-- **Checkout** - Customer info collection, shipping address, order notes
+- **Checkout** - Customer info collection, shipping address, order notes, returning customer auto-fill
 - **Payment** - Cash on Delivery (COD) + Stripe (configurable)
 - **Order Confirmation** - Success page with order number
+- **Order Tracking** - Public order tracking via order number + email (`/orders/track`)
 
 ### Admin Dashboard (`/admin`)
-- **Authentication** - HMAC-signed cookie session, single admin login
-- **Dashboard** - Stats overview (products, orders, customers, revenue) + recent orders
+- **Multi-Admin Authentication** - HMAC-signed cookie session, multiple admin accounts with scrypt password hashing, env-var fallback for initial setup
+- **Dashboard** - Stats overview (products, orders, customers, revenue) + kanban-lite order columns (Unfulfilled/Shipped/Delivered) with quick action buttons
 - **Product Management** - Full CRUD with category, status, tags, price management
-- **Order Management** - Order list with status badges, detail view, status flow (pending → confirmed → shipped → delivered)
-- **Customer Management** - Customer list with contact info and order history
+- **Category Management** - Admin-manageable categories with inline create/edit, delete protection, sort ordering
+- **Order Management** - Order list with filter tabs (All/Unfulfilled/Shipped/Delivered/Cancelled), detail view with visual status timeline, status transition enforcement, notes
+- **Customer Management** - Customer list with contact info and order history, automatic deduplication by email
+- **Admin User Management** - Create/delete admin accounts, view last login times (`/admin/settings/users`)
 
 ### Design System
 - **Theme** - Teal primary (#108474), peach backgrounds, warm brown text
@@ -36,7 +39,7 @@ A self-hosted e-commerce platform for small product catalogs, built with Next.js
 | Styling | Tailwind CSS v4 |
 | State | Zustand (cart) + React Server Components |
 | Validation | Zod |
-| Auth | HMAC-signed cookies (no external deps) |
+| Auth | HMAC-signed cookies + scrypt password hashing (no external deps) |
 | Payment | Stripe + COD |
 | Deployment | Docker + Caddy (auto HTTPS) |
 
@@ -64,7 +67,7 @@ pnpm db:migrate
 pnpm db:seed
 ```
 
-This creates `data/fat-cat.db` with 3 categories and 8 sample products.
+This creates `data/fat-cat.db` with 3 categories (Handcrafted Toys, Plush Animals, Accessories) and 8 sample products.
 
 ### Development
 
@@ -78,6 +81,8 @@ Open [http://localhost:3000](http://localhost:3000) for the storefront and [http
 - Username: `admin`
 - Password: `fatcat2024`
 
+On first login, a DB admin record is auto-created. Additional admins can be managed at `/admin/settings/users`.
+
 ### Environment Variables
 
 Copy `.env.example` and configure:
@@ -88,8 +93,8 @@ cp .env.example .env
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `ADMIN_USERNAME` | Admin login username | `admin` |
-| `ADMIN_PASSWORD` | Admin login password | `fatcat2024` |
+| `ADMIN_USERNAME` | Initial admin login username (used when no DB admins exist) | `admin` |
+| `ADMIN_PASSWORD` | Initial admin login password (used when no DB admins exist) | `fatcat2024` |
 | `SESSION_SECRET` | HMAC signing key for session cookies | `dev-secret-change-in-production` |
 | `STRIPE_SECRET_KEY` | Stripe secret key | — |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | — |
@@ -108,15 +113,17 @@ src/
 │   │   └── checkout/          # Checkout & order confirmation
 │   ├── admin/                 # Admin dashboard (auth-protected)
 │   │   ├── login/             # Login page
-│   │   └── (dashboard)/       # Dashboard, products, orders, customers
+│   │   └── (dashboard)/       # Dashboard, products, orders, customers, categories, settings
 │   └── api/                   # API routes
-│       ├── auth/              # Login/logout
+│       ├── auth/              # Login/logout/me
 │       ├── checkout/          # Order creation
+│       ├── customers/         # Customer lookup (returning customer)
+│       ├── orders/            # Public order tracking
 │       ├── upload/            # Image upload
-│       └── admin/             # Admin CRUD endpoints
+│       └── admin/             # Admin CRUD (products, orders, categories, users)
 ├── components/
 │   ├── storefront/            # Header, footer, product card, add-to-cart
-│   └── admin/                 # Sidebar, product form, order status updater
+│   └── admin/                 # Sidebar, product form, order status updater, timeline, dashboard cards
 ├── lib/
 │   ├── db/                    # Database connection, schema, seed
 │   ├── auth.ts                # Session management
@@ -128,8 +135,9 @@ src/
 
 ## Database Schema
 
-10 tables with full relational mapping:
+11 tables with full relational mapping:
 
+- **admin_users** - Admin accounts with scrypt-hashed passwords
 - **categories** - Product categories with slug and sort order
 - **products** - Title, slug, price (in cents), status, tags
 - **product_images** - Multiple images per product with sort order
@@ -137,7 +145,7 @@ src/
 - **customer_addresses** - Multiple addresses per customer
 - **orders** - Order number, status, payment method/status, totals
 - **order_line_items** - Snapshot of product title and price at time of order
-- **order_status_history** - Audit log of status transitions
+- **order_status_history** - Audit log of status transitions with admin attribution
 - **analytics_events** - Raw pageview/event tracking
 - **analytics_daily_summary** - Aggregated daily stats
 

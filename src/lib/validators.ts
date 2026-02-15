@@ -29,3 +29,19 @@ export const productSchema = z.object({
 });
 
 export type ProductInput = z.infer<typeof productSchema>;
+
+export const categorySchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+export type CategoryInput = z.infer<typeof categorySchema>;
+
+export const categoryUpdateSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+export type CategoryUpdateInput = z.infer<typeof categoryUpdateSchema>;

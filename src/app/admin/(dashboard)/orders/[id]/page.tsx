@@ -1,9 +1,10 @@
 import { db } from "@/lib/db";
-import { orders } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { orders, adminUsers } from "@/lib/db/schema";
+import { eq, inArray } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
 import { OrderStatusUpdater } from "@/components/admin/order-status-updater";
+import { OrderTimeline } from "@/components/admin/order-timeline";
 import Link from "next/link";
 
 interface OrderDetailPageProps {
@@ -25,6 +26,25 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   });
 
   if (!order) notFound();
+
+  // Look up admin display names for status history entries
+  const changedByIds = order.statusHistory
+    .map((h) => h.changedBy)
+    .filter((id): id is string => id !== null);
+
+  const uniqueIds = [...new Set(changedByIds)];
+  const adminNameMap: Record<string, string> = {};
+
+  if (uniqueIds.length > 0) {
+    const admins = await db
+      .select({ id: adminUsers.id, displayName: adminUsers.displayName, username: adminUsers.username })
+      .from(adminUsers)
+      .where(inArray(adminUsers.username, uniqueIds));
+
+    for (const admin of admins) {
+      adminNameMap[admin.username] = admin.displayName;
+    }
+  }
 
   const shippingAddr = order.shippingAddress
     ? JSON.parse(order.shippingAddress)
@@ -98,24 +118,11 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             <h2 className="font-display text-lg font-bold text-warm-brown">
               Status History
             </h2>
-            <div className="mt-4 space-y-3">
-              {order.statusHistory.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="flex items-center gap-3 text-sm"
-                >
-                  <span className="text-warm-brown/40">
-                    {new Date(entry.createdAt).toLocaleString()}
-                  </span>
-                  <span className="capitalize text-warm-brown">
-                    {entry.fromStatus ? `${entry.fromStatus} → ` : ""}
-                    {entry.toStatus}
-                  </span>
-                  {entry.note && (
-                    <span className="text-warm-brown/60">({entry.note})</span>
-                  )}
-                </div>
-              ))}
+            <div className="mt-4">
+              <OrderTimeline
+                entries={order.statusHistory}
+                adminNames={adminNameMap}
+              />
             </div>
           </div>
         </div>

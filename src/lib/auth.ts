@@ -6,6 +6,8 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "fatcat2024";
 const SESSION_SECRET = process.env.SESSION_SECRET ?? "dev-secret-change-in-production";
 const SESSION_COOKIE = "fat-cat-session";
 
+const SCRYPT_KEYLEN = 64;
+
 function sign(payload: string): string {
   const hmac = crypto.createHmac("sha256", SESSION_SECRET).update(payload).digest("hex");
   return `${payload}.${hmac}`;
@@ -23,13 +25,45 @@ function verify(signed: string): string | null {
   return payload;
 }
 
+export async function hashPassword(password: string): Promise<string> {
+  const salt = crypto.randomBytes(16).toString("hex");
+  return new Promise((resolve, reject) => {
+    crypto.scrypt(password, salt, SCRYPT_KEYLEN, (err, derivedKey) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(`${salt}:${derivedKey.toString("hex")}`);
+    });
+  });
+}
+
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  const [salt, key] = hash.split(":");
+  if (!salt || !key) return false;
+  return new Promise((resolve, reject) => {
+    crypto.scrypt(password, salt, SCRYPT_KEYLEN, (err, derivedKey) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(crypto.timingSafeEqual(Buffer.from(key, "hex"), derivedKey));
+    });
+  });
+}
+
 export function validateCredentials(username: string, password: string): boolean {
   return username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
 }
 
-export async function createSession() {
+export function getEnvCredentials() {
+  return { username: ADMIN_USERNAME, password: ADMIN_PASSWORD };
+}
+
+export async function createSession(user: { userId: string; username: string }) {
   const payload = JSON.stringify({
-    user: "admin",
+    userId: user.userId,
+    username: user.username,
     iat: Date.now(),
   });
   const token = sign(Buffer.from(payload).toString("base64url"));
@@ -49,20 +83,45 @@ export async function clearSession() {
   cookieStore.delete(SESSION_COOKIE);
 }
 
+interface SessionPayload {
+  userId: string;
+  username: string;
+}
+
+function parseSessionPayload(token: string): SessionPayload | null {
+  const raw = verify(token);
+  if (!raw) return null;
+
+  try {
+    const data = JSON.parse(Buffer.from(raw, "base64url").toString());
+    // Check token is not older than 7 days
+    if (Date.now() - data.iat > 7 * 24 * 60 * 60 * 1000) return null;
+
+    // Backward compatibility: old sessions with { user: "admin" }
+    if (data.user === "admin" && !data.userId) {
+      return { userId: "legacy", username: "admin" };
+    }
+
+    if (data.userId && data.username) {
+      return { userId: data.userId, username: data.username };
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function isAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (!token) return false;
+  return parseSessionPayload(token) !== null;
+}
 
-  const payload = verify(token);
-  if (!payload) return false;
-
-  try {
-    const data = JSON.parse(Buffer.from(payload, "base64url").toString());
-    // Check token is not older than 7 days
-    if (Date.now() - data.iat > 7 * 24 * 60 * 60 * 1000) return false;
-    return data.user === "admin";
-  } catch {
-    return false;
-  }
+export async function getCurrentUser(): Promise<SessionPayload | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  if (!token) return null;
+  return parseSessionPayload(token);
 }

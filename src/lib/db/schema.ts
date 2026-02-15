@@ -1,5 +1,16 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, index, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
+
+// A1: Admin users table for multi-admin auth
+export const adminUsers = sqliteTable("admin_users", {
+  id: text("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  displayName: text("display_name").notNull(),
+  createdAt: text("created_at").notNull(),
+  lastLoginAt: text("last_login_at"),
+});
 
 export const categories = sqliteTable("categories", {
   id: text("id").primaryKey(),
@@ -25,7 +36,10 @@ export const products = sqliteTable("products", {
   tags: text("tags"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
-});
+}, (table) => ([
+  index("idx_products_category_id").on(table.categoryId),
+  index("idx_products_status").on(table.status),
+]));
 
 export const productImages = sqliteTable("product_images", {
   id: text("id").primaryKey(),
@@ -48,7 +62,9 @@ export const customers = sqliteTable("customers", {
   note: text("note"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
-});
+}, (table) => ([
+  uniqueIndex("idx_customers_email").on(table.email),
+]));
 
 export const customerAddresses = sqliteTable("customer_addresses", {
   id: text("id").primaryKey(),
@@ -87,7 +103,10 @@ export const orders = sqliteTable("orders", {
   shippingAddress: text("shipping_address"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
-});
+}, (table) => ([
+  index("idx_orders_status").on(table.status),
+  index("idx_orders_customer_id").on(table.customerId),
+]));
 
 export const orderLineItems = sqliteTable("order_line_items", {
   id: text("id").primaryKey(),
@@ -108,6 +127,7 @@ export const orderStatusHistory = sqliteTable("order_status_history", {
     .references(() => orders.id, { onDelete: "cascade" }),
   fromStatus: text("from_status"),
   toStatus: text("to_status").notNull(),
+  changedBy: text("changed_by"),
   note: text("note"),
   createdAt: text("created_at").notNull(),
 });
@@ -132,6 +152,8 @@ export const analyticsDailySummary = sqliteTable("analytics_daily_summary", {
 });
 
 // Relations
+export const adminUsersRelations = relations(adminUsers, () => ({}));
+
 export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
 }));

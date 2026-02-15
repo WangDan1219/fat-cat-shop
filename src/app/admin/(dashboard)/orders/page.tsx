@@ -1,9 +1,30 @@
 import { db } from "@/lib/db";
+import { orders } from "@/lib/db/schema";
+import { inArray } from "drizzle-orm";
 import { formatPrice } from "@/lib/utils";
+import { OrderFilterTabs } from "@/components/admin/order-filter-tabs";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function AdminOrdersPage() {
+interface AdminOrdersPageProps {
+  searchParams: Promise<{ status?: string }>;
+}
+
+type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+
+const statusFilterMap: Record<string, OrderStatus[]> = {
+  unfulfilled: ["pending", "confirmed"],
+  shipped: ["shipped"],
+  delivered: ["delivered"],
+  cancelled: ["cancelled"],
+};
+
+export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageProps) {
+  const { status: statusFilter } = await searchParams;
+  const filterStatuses = statusFilter ? statusFilterMap[statusFilter] : undefined;
+
   const allOrders = await db.query.orders.findMany({
+    where: filterStatuses ? inArray(orders.status, filterStatuses) : undefined,
     with: { customer: true, lineItems: true },
     orderBy: (orders, { desc }) => [desc(orders.createdAt)],
   });
@@ -14,7 +35,13 @@ export default async function AdminOrdersPage() {
         Orders
       </h1>
 
-      <div className="mt-6 overflow-hidden rounded-xl bg-white shadow-sm">
+      <div className="mt-4">
+        <Suspense fallback={null}>
+          <OrderFilterTabs />
+        </Suspense>
+      </div>
+
+      <div className="mt-4 overflow-hidden rounded-xl bg-white shadow-sm">
         <table className="w-full">
           <thead>
             <tr className="border-b border-warm-brown/10">
