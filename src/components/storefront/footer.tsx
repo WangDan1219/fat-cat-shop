@@ -1,6 +1,14 @@
 import Link from "next/link";
 
-export function Footer() {
+export function Footer({
+  shopName = "Fat Cat",
+  tagline = "Your one-stop shop for happy cats.",
+  copyrightName = "Fat Cat Shop",
+}: {
+  shopName?: string;
+  tagline?: string;
+  copyrightName?: string;
+}) {
   return (
     <footer className="border-t border-peach-dark/50 bg-peach">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -9,10 +17,10 @@ export function Footer() {
             href="/"
             className="font-display text-xl font-bold text-teal-primary transition-colors duration-200 hover:text-teal-dark"
           >
-            Fat Cat
+            {shopName}
           </Link>
           <p className="text-center text-sm leading-relaxed text-warm-brown/70">
-            Your one-stop shop for happy cats.
+            {tagline}
           </p>
           <nav className="flex gap-6">
             <Link
@@ -23,7 +31,7 @@ export function Footer() {
             </Link>
           </nav>
           <p className="text-xs text-warm-brown/50">
-            &copy; {new Date().getFullYear()} Fat Cat Shop. All rights reserved.
+            &copy; {new Date().getFullYear()} {copyrightName}. All rights reserved.
           </p>
         </div>
       </div>

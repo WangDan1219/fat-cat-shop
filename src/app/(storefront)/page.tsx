@@ -3,27 +3,63 @@ import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { ProductCard } from "@/components/storefront/product-card";
+import { getSiteSettings } from "@/lib/site-settings";
 
 export default async function HomePage() {
-  const allProducts = await db.query.products.findMany({
-    where: eq(products.status, "active"),
-    with: { images: true },
-    limit: 4,
-  });
+  const [allProducts, settings] = await Promise.all([
+    db.query.products.findMany({
+      where: eq(products.status, "active"),
+      with: { images: true },
+      limit: 4,
+    }),
+    getSiteSettings(),
+  ]);
+
+  // Split heading at "Cat" to highlight it, or use full heading
+  const headingParts = settings.hero_heading.split(/\b(Cat)\b/i);
 
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-peach">
+      <section
+        className="relative bg-peach"
+        style={
+          settings.banner_image_url
+            ? {
+              backgroundImage: `linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.15)), url(${settings.banner_image_url})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }
+            : undefined
+        }
+      >
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="text-center">
-            <h1 className="font-display text-4xl font-bold tracking-tight text-warm-brown sm:text-5xl md:text-6xl">
-              Everything Your{" "}
-              <span className="text-teal-primary">Cat</span> Needs
+            <h1
+              className={`font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl ${settings.banner_image_url ? "text-white" : "text-warm-brown"
+                }`}
+            >
+              {headingParts.length > 1 ? (
+                <>
+                  {headingParts.map((part, i) =>
+                    part.toLowerCase() === "cat" ? (
+                      <span key={i} className={settings.banner_image_url ? "text-peach" : "text-teal-primary"}>
+                        {part}
+                      </span>
+                    ) : (
+                      <span key={i}>{part}</span>
+                    )
+                  )}
+                </>
+              ) : (
+                settings.hero_heading
+              )}
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-warm-brown/70">
-              Premium toys, treats, and accessories curated for your feline
-              friends. Because happy cats make happy homes.
+            <p
+              className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed ${settings.banner_image_url ? "text-white/90" : "text-warm-brown/70"
+                }`}
+            >
+              {settings.hero_subheading}
             </p>
             <div className="mt-10 flex items-center justify-center gap-4">
               <Link

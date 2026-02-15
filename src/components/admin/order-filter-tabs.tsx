@@ -8,6 +8,8 @@ const tabs = [
   { label: "Unfulfilled", value: "unfulfilled" },
   { label: "Shipped", value: "shipped" },
   { label: "Delivered", value: "delivered" },
+  { label: "Completed", value: "completed" },
+  { label: "Returned", value: "returned" },
   { label: "Cancelled", value: "cancelled" },
 ] as const;
 

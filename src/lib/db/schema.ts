@@ -85,7 +85,7 @@ export const orders = sqliteTable("orders", {
   orderNumber: text("order_number").notNull().unique(),
   customerId: text("customer_id").references(() => customers.id),
   status: text("status", {
-    enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
+    enum: ["pending", "confirmed", "shipped", "delivered", "completed", "returned", "cancelled"],
   })
     .notNull()
     .default("pending"),
@@ -149,6 +149,12 @@ export const analyticsDailySummary = sqliteTable("analytics_daily_summary", {
   pageViews: integer("page_views").notNull().default(0),
   ordersCount: integer("orders_count").notNull().default(0),
   revenue: integer("revenue").notNull().default(0),
+});
+
+export const siteSettings = sqliteTable("site_settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: text("updated_at").notNull(),
 });
 
 // Relations

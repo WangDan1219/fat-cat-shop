@@ -24,6 +24,8 @@ export const VALID_STATUS_TRANSITIONS: Record<string, string[]> = {
   pending: ["confirmed", "cancelled"],
   confirmed: ["shipped", "cancelled"],
   shipped: ["delivered", "cancelled"],
-  delivered: ["cancelled"],
+  delivered: ["completed", "returned", "cancelled"],
+  completed: ["returned"],
+  returned: [],
   cancelled: [],
 };

@@ -4,13 +4,15 @@ import Link from "next/link";
 import { useCartStore } from "@/stores/cart-store";
 import { useEffect, useState } from "react";
 
-export function Header() {
-  const totalItems = useCartStore((s) => s.totalItems);
+export function Header({ shopName = "Fat Cat" }: { shopName?: string }) {
+  const items = useCartStore((s) => s.items);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <header className="sticky top-0 z-50 border-b border-peach-dark/50 bg-cream/90 backdrop-blur-md">
@@ -19,7 +21,7 @@ export function Header() {
           href="/"
           className="font-display text-2xl font-bold text-teal-primary transition-colors duration-200 hover:text-teal-dark"
         >
-          Fat Cat
+          {shopName}
         </Link>
 
         <nav className="hidden items-center gap-8 sm:flex">
@@ -34,7 +36,7 @@ export function Header() {
         <Link
           href="/cart"
           className="relative flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full border-2 border-teal-dark/10 bg-teal-primary px-5 py-2 text-sm font-medium text-white shadow-clay transition-all duration-200 ease-out hover:bg-teal-dark hover:shadow-clay-hover active:shadow-clay-pressed"
-          aria-label={`Shopping cart${mounted && totalItems() > 0 ? `, ${totalItems()} items` : ""}`}
+          aria-label={`Shopping cart${mounted && itemCount > 0 ? `, ${itemCount} items` : ""}`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -53,9 +55,9 @@ export function Header() {
             <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
           </svg>
           Cart
-          {mounted && totalItems() > 0 && (
+          {mounted && itemCount > 0 && (
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-teal-primary">
-              {totalItems()}
+              {itemCount}
             </span>
           )}
         </Link>

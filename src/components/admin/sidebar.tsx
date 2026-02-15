@@ -11,7 +11,7 @@ const navItems = [
   { href: "/admin/products", label: "Products", icon: "package" },
   { href: "/admin/orders", label: "Orders", icon: "clipboard", showBadge: true },
   { href: "/admin/customers", label: "Customers", icon: "users" },
-  { href: "/admin/settings/users", label: "Settings", icon: "settings" },
+  { href: "/admin/settings", label: "Settings", icon: "settings" },
 ];
 
 const icons: Record<string, React.ReactNode> = {
@@ -80,7 +80,7 @@ export function AdminSidebar() {
           setDisplayName(data.displayName);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   async function handleLogout() {

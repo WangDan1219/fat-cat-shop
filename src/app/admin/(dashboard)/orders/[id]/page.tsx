@@ -132,6 +132,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           <OrderStatusUpdater
             orderId={order.id}
             currentStatus={order.status}
+            paymentStatus={order.paymentStatus}
           />
 
           {/* Customer Info */}

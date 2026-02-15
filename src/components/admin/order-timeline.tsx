@@ -17,6 +17,8 @@ const statusColors: Record<string, { dot: string; label: string }> = {
   confirmed: { dot: "bg-blue-500", label: "text-blue-700" },
   shipped: { dot: "bg-purple-500", label: "text-purple-700" },
   delivered: { dot: "bg-green-500", label: "text-green-700" },
+  completed: { dot: "bg-emerald-600", label: "text-emerald-700" },
+  returned: { dot: "bg-orange-500", label: "text-orange-700" },
   cancelled: { dot: "bg-red-500", label: "text-red-700" },
 };
 

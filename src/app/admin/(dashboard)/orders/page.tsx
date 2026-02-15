@@ -10,12 +10,14 @@ interface AdminOrdersPageProps {
   searchParams: Promise<{ status?: string }>;
 }
 
-type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "completed" | "returned" | "cancelled";
 
 const statusFilterMap: Record<string, OrderStatus[]> = {
   unfulfilled: ["pending", "confirmed"],
   shipped: ["shipped"],
   delivered: ["delivered"],
+  completed: ["completed"],
+  returned: ["returned"],
   cancelled: ["cancelled"],
 };
 
@@ -84,13 +86,12 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
                 </td>
                 <td className="px-6 py-4">
                   <span
-                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
-                      order.paymentStatus === "paid"
+                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${order.paymentStatus === "paid"
                         ? "bg-green-100 text-green-800"
                         : order.paymentStatus === "refunded"
                           ? "bg-red-100 text-red-800"
                           : "bg-yellow-100 text-yellow-800"
-                    }`}
+                      }`}
                   >
                     {order.paymentStatus}
                   </span>
@@ -129,6 +130,8 @@ function StatusBadge({ status }: { status: string }) {
     confirmed: "bg-blue-100 text-blue-800",
     shipped: "bg-purple-100 text-purple-800",
     delivered: "bg-green-100 text-green-800",
+    completed: "bg-emerald-100 text-emerald-800",
+    returned: "bg-orange-100 text-orange-800",
     cancelled: "bg-red-100 text-red-800",
   };
 
