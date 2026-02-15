@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isAuthenticated } from "@/lib/auth";
 import { getSiteSettings, setSiteSetting } from "@/lib/site-settings";
 
@@ -40,6 +41,7 @@ export async function PUT(req: NextRequest) {
         }
 
         await setSiteSetting(key, value);
+        revalidatePath("/", "layout");
         return NextResponse.json({ success: true });
     } catch {
         return NextResponse.json(
