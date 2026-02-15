@@ -10,6 +10,8 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN mkdir -p data public
+RUN pnpm db:generate && pnpm db:migrate
 RUN pnpm build
 
 FROM base AS runner
@@ -22,12 +24,13 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/drizzle ./drizzle
+COPY --from=builder /app/src/lib/db/migrate.mjs ./migrate.mjs
 
 RUN mkdir -p /app/data && chown nextjs:nodejs /app/data
 
 USER nextjs
-EXPOSE 3000
-ENV PORT=3000
+EXPOSE 7000
+ENV PORT=7000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "node migrate.mjs && node server.js"]

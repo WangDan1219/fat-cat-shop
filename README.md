@@ -75,7 +75,7 @@ This creates `data/fat-cat.db` with 3 categories (Handcrafted Toys, Plush Animal
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) for the storefront and [http://localhost:3000/admin/login](http://localhost:3000/admin/login) for the admin panel.
+Open [http://localhost:7000](http://localhost:7000) for the storefront and [http://localhost:7000/admin/login](http://localhost:7000/admin/login) for the admin panel.
 
 **Default admin credentials:**
 - Username: `admin`
@@ -99,7 +99,7 @@ cp .env.example .env
 | `STRIPE_SECRET_KEY` | Stripe secret key | — |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | — |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | — |
-| `NEXT_PUBLIC_SITE_URL` | Public site URL | `http://localhost:3000` |
+| `NEXT_PUBLIC_SITE_URL` | Public site URL | `http://localhost:7000` |
 
 ## Project Structure
 
@@ -160,14 +160,14 @@ docker compose up -d
 ```
 
 This starts:
-- **app** - Next.js standalone server on port 3000
+- **app** - Next.js standalone server on port 7000
 - **caddy** - Reverse proxy with automatic HTTPS
 
 Configure your domain in `Caddyfile`:
 
 ```
 your-domain.com {
-    reverse_proxy app:3000
+    reverse_proxy app:7000
 }
 ```
 

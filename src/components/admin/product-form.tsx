@@ -149,7 +149,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="mb-1 block text-sm font-medium text-warm-brown/70">
-            Price (USD) <span className="text-red-400">*</span>
+            Price (GBP) <span className="text-red-400">*</span>
           </label>
           <input
             type="number"

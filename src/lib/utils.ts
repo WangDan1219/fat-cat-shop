@@ -1,7 +1,7 @@
 export function formatPrice(priceInCents: number): string {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-GB", {
     style: "currency",
-    currency: "USD",
+    currency: "GBP",
   }).format(priceInCents / 100);
 }
 
