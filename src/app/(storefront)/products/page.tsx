@@ -4,6 +4,8 @@ import { eq } from "drizzle-orm";
 import { ProductCard } from "@/components/storefront/product-card";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Shop",
   description: "Browse our collection of premium cat products.",

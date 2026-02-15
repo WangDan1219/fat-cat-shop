@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { ProductCard } from "@/components/storefront/product-card";
 import { getSiteSettings } from "@/lib/site-settings";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [allProducts, settings] = await Promise.all([
     db.query.products.findMany({
