@@ -23,8 +23,8 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder /app/drizzle ./drizzle
-COPY --from=builder /app/src/lib/db/migrate.mjs ./migrate.mjs
+COPY --from=builder --chown=nextjs:nodejs /app/drizzle ./drizzle
+COPY --from=builder --chown=nextjs:nodejs /app/src/lib/db/migrate.mjs ./migrate.mjs
 
 RUN mkdir -p /app/data && chown nextjs:nodejs /app/data
 
