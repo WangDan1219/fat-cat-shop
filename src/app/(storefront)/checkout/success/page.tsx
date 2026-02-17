@@ -22,7 +22,7 @@ export default async function CheckoutSuccessPage({
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-comic-ink"
+          className="text-white"
         >
           <path d="M20 6 9 17l-5-5" />
         </svg>
@@ -32,7 +32,7 @@ export default async function CheckoutSuccessPage({
       </h1>
       {order && (
         <p className="mt-2 text-lg font-bold text-comic-ink/70">
-          Order number: <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-comic-ink">{order}</span>
+          Order number: <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-white">{order}</span>
         </p>
       )}
       <p className="mt-4 font-bold text-comic-ink/60">

@@ -209,7 +209,7 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={applySavedDetails}
-                  className="cursor-pointer border-2 border-comic-ink bg-comic-cyan px-3 py-1 text-sm font-bold text-comic-ink transition-colors hover:bg-comic-cyan-dark"
+                  className="cursor-pointer border-2 border-comic-ink bg-comic-cyan px-3 py-1 text-sm font-bold text-white transition-colors hover:bg-comic-cyan-dark"
                 >
                   Use saved details
                 </button>
@@ -267,7 +267,7 @@ export default function CheckoutPage() {
               Payment Method
             </h2>
             <div className="mt-4 space-y-3">
-              <label className="flex cursor-pointer items-center gap-3 border-2 border-comic-ink p-4 transition-all hover:bg-comic-yellow/20">
+              <label className="flex cursor-pointer items-center gap-3 border-2 border-comic-ink p-4 transition-all hover:bg-comic-red/10">
                 <input
                   type="radio"
                   name="paymentMethod"
@@ -280,7 +280,7 @@ export default function CheckoutPage() {
                   Cash on Delivery (COD)
                 </span>
               </label>
-              <label className="flex cursor-pointer items-center gap-3 border-2 border-comic-ink p-4 transition-all hover:bg-comic-yellow/20">
+              <label className="flex cursor-pointer items-center gap-3 border-2 border-comic-ink p-4 transition-all hover:bg-comic-red/10">
                 <input
                   type="radio"
                   name="paymentMethod"
@@ -334,14 +334,14 @@ export default function CheckoutPage() {
             <div className="mt-4 border-t-2 border-comic-ink pt-4">
               <div className="flex items-center justify-between text-lg font-bold">
                 <span className="text-comic-ink">Total</span>
-                <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-comic-ink">
+                <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-white">
                   {formatPrice(totalPrice())}
                 </span>
               </div>
             </div>
 
             {error && (
-              <p className="mt-4 border-2 border-comic-red bg-comic-red/10 p-3 text-sm font-bold text-comic-red">
+              <p className="mt-4 border-2 border-comic-error bg-comic-error/10 p-3 text-sm font-bold text-comic-error">
                 {error}
               </p>
             )}
@@ -379,7 +379,7 @@ function InputField({
     <div>
       <label className="mb-1 block text-sm font-bold text-comic-ink/70">
         {label}
-        {required && <span className="text-comic-red"> *</span>}
+        {required && <span className="text-comic-error"> *</span>}
       </label>
       <input
         type={type}

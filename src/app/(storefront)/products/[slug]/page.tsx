@@ -113,7 +113,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Product Info */}
         <div>
           {product.category && (
-            <p className="mb-2 inline-block border-2 border-comic-ink bg-comic-cyan px-2 py-0.5 text-sm font-bold text-comic-ink">
+            <p className="mb-2 inline-block border-2 border-comic-ink bg-comic-cyan px-2 py-0.5 text-sm font-bold text-white">
               {product.category.name}
             </p>
           )}
@@ -122,7 +122,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </h1>
 
           <div className="mt-4 flex items-center gap-3">
-            <span className="border-3 border-comic-ink bg-comic-yellow px-3 py-1 text-3xl font-bold text-comic-ink shadow-comic-sm">
+            <span className="border-3 border-comic-ink bg-comic-yellow px-3 py-1 text-3xl font-bold text-white shadow-comic-sm">
               {formatPrice(product.price)}
             </span>
             {hasDiscount && (

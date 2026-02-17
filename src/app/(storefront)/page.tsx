@@ -38,14 +38,14 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="text-center">
             <h1
-              className={`font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl ${settings.banner_image_url ? "text-white" : "text-comic-ink"
+              className={`font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl ${settings.banner_image_url ? "text-white" : "text-white"
                 }`}
             >
               {headingParts.length > 1 ? (
                 <>
                   {headingParts.map((part, i) =>
                     part.toLowerCase() === "cat" ? (
-                      <span key={i} className={settings.banner_image_url ? "text-comic-yellow" : "text-comic-red"}>
+                      <span key={i} className={settings.banner_image_url ? "text-comic-yellow" : "text-comic-cyan"}>
                         {part}
                       </span>
                     ) : (
@@ -58,7 +58,7 @@ export default async function HomePage() {
               )}
             </h1>
             <p
-              className={`mx-auto mt-6 max-w-2xl text-lg font-bold leading-relaxed ${settings.banner_image_url ? "text-white/90" : "text-comic-ink/70"
+              className={`mx-auto mt-6 max-w-2xl text-lg font-bold leading-relaxed ${settings.banner_image_url ? "text-white/90" : "text-white/70"
                 }`}
             >
               {settings.hero_subheading}
