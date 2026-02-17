@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
-import { Comfortaa, Epilogue } from "next/font/google";
+import { Baloo_2, Comic_Neue } from "next/font/google";
 import "./globals.css";
 import { getSiteSettings } from "@/lib/site-settings";
 
-const comfortaa = Comfortaa({
+const baloo2 = Baloo_2({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
 });
 
-const epilogue = Epilogue({
+const comicNeue = Comic_Neue({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
+  weight: ["300", "400", "700"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${comfortaa.variable} ${epilogue.variable} antialiased`}>
+      <body className={`${baloo2.variable} ${comicNeue.variable} antialiased`}>
         {children}
       </body>
     </html>

@@ -1,0 +1,6 @@
+feat(ui): implement comic style theme
+
+- Update layout to use Baloo 2 and Comic Neue fonts
+- Style store front components (header, footer, product card) with comic-themed design
+- Update cart and checkout pages to match new theme
+- Use comic-specific tailwind utility classes (colors, borders, shadows)

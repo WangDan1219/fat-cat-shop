@@ -17,14 +17,13 @@ export default async function HomePage() {
     getSiteSettings(),
   ]);
 
-  // Split heading at "Cat" to highlight it, or use full heading
   const headingParts = settings.hero_heading.split(/\b(Cat)\b/i);
 
   return (
     <>
       {/* Hero Section */}
       <section
-        className="relative bg-peach"
+        className="relative border-b-3 border-comic-ink bg-comic-yellow"
         style={
           settings.banner_image_url
             ? {
@@ -35,17 +34,18 @@ export default async function HomePage() {
             : undefined
         }
       >
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <div className="comic-dots pointer-events-none absolute inset-0" />
+        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="text-center">
             <h1
-              className={`font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl ${settings.banner_image_url ? "text-white" : "text-warm-brown"
+              className={`font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl ${settings.banner_image_url ? "text-white" : "text-comic-ink"
                 }`}
             >
               {headingParts.length > 1 ? (
                 <>
                   {headingParts.map((part, i) =>
                     part.toLowerCase() === "cat" ? (
-                      <span key={i} className={settings.banner_image_url ? "text-peach" : "text-teal-primary"}>
+                      <span key={i} className={settings.banner_image_url ? "text-comic-yellow" : "text-comic-red"}>
                         {part}
                       </span>
                     ) : (
@@ -58,7 +58,7 @@ export default async function HomePage() {
               )}
             </h1>
             <p
-              className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed ${settings.banner_image_url ? "text-white/90" : "text-warm-brown/70"
+              className={`mx-auto mt-6 max-w-2xl text-lg font-bold leading-relaxed ${settings.banner_image_url ? "text-white/90" : "text-comic-ink/70"
                 }`}
             >
               {settings.hero_subheading}
@@ -66,7 +66,7 @@ export default async function HomePage() {
             <div className="mt-10 flex items-center justify-center gap-4">
               <Link
                 href="/products"
-                className="min-h-[44px] cursor-pointer rounded-full border-2 border-teal-dark/10 bg-teal-primary px-8 py-3 font-display text-sm font-bold text-white shadow-clay transition-all duration-200 ease-out hover:bg-teal-dark hover:shadow-clay-hover hover:-translate-y-0.5 active:shadow-clay-pressed active:translate-y-0"
+                className="min-h-[44px] cursor-pointer border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-white shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed"
               >
                 Shop Now
               </Link>
@@ -78,12 +78,12 @@ export default async function HomePage() {
       {/* Featured Products */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-2xl font-bold text-warm-brown">
+          <h2 className="font-display text-2xl font-bold text-comic-ink">
             Featured Products
           </h2>
           <Link
             href="/products"
-            className="cursor-pointer text-sm font-medium text-teal-primary transition-colors duration-200 hover:text-teal-dark"
+            className="cursor-pointer border-b-2 border-comic-ink font-bold text-comic-ink transition-all duration-200 hover:border-comic-red hover:text-comic-red"
           >
             View all &rarr;
           </Link>
@@ -103,7 +103,7 @@ export default async function HomePage() {
           ))}
         </div>
         {allProducts.length === 0 && (
-          <p className="mt-8 text-center text-warm-brown/50">
+          <p className="mt-8 text-center font-bold text-comic-ink/50">
             No products yet. Check back soon!
           </p>
         )}
