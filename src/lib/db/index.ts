@@ -26,6 +26,6 @@ function getDb(): DrizzleDb {
 
 export const db = new Proxy({} as DrizzleDb, {
   get(_, prop) {
-    return (getDb() as Record<string | symbol, unknown>)[prop];
+    return (getDb() as unknown as Record<string | symbol, unknown>)[prop];
   },
 });
