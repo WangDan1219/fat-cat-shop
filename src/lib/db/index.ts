@@ -10,10 +10,22 @@ if (!fs.existsSync(dataDir)) {
 }
 
 const dbPath = path.join(dataDir, "fat-cat.db");
-const sqlite = new Database(dbPath);
 
-sqlite.pragma("busy_timeout = 5000");
-sqlite.pragma("journal_mode = WAL");
-sqlite.pragma("foreign_keys = ON");
+type DrizzleDb = ReturnType<typeof drizzle<typeof schema>>;
+let _db: DrizzleDb | null = null;
 
-export const db = drizzle(sqlite, { schema });
+function getDb(): DrizzleDb {
+  if (!_db) {
+    const sqlite = new Database(dbPath, { timeout: 5000 });
+    sqlite.pragma("journal_mode = WAL");
+    sqlite.pragma("foreign_keys = ON");
+    _db = drizzle(sqlite, { schema });
+  }
+  return _db;
+}
+
+export const db = new Proxy({} as DrizzleDb, {
+  get(_, prop) {
+    return (getDb() as Record<string | symbol, unknown>)[prop];
+  },
+});

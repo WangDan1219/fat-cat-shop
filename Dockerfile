@@ -12,7 +12,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN mkdir -p data public
 RUN pnpm db:generate && pnpm db:migrate
-RUN rm -f data/fat-cat.db-wal data/fat-cat.db-shm
 RUN pnpm build
 
 FROM base AS runner
