@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import Link from "next/link";
 
 export default async function AdminCustomersPage() {
   const allCustomers = await db.query.customers.findMany({
@@ -28,6 +29,9 @@ export default async function AdminCustomersPage() {
               <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-warm-brown/60">
                 Orders
               </th>
+              <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-warm-brown/60">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-warm-brown/5">
@@ -44,6 +48,14 @@ export default async function AdminCustomersPage() {
                 </td>
                 <td className="px-6 py-4 text-right text-sm text-warm-brown">
                   {customer.orders.length}
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <Link
+                    href={`/admin/customers/${customer.id}`}
+                    className="rounded-lg px-3 py-1 text-sm text-teal-primary transition-colors hover:bg-teal-primary/10"
+                  >
+                    View
+                  </Link>
                 </td>
               </tr>
             ))}

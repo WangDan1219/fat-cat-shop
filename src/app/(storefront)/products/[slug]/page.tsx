@@ -4,6 +4,7 @@ import { and, eq, ne } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "@/components/storefront/add-to-cart-button";
+import { ProductImageGallery } from "@/components/storefront/product-image-gallery";
 import { ProductCard } from "@/components/storefront/product-card";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -54,7 +55,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
       })
     : [];
 
-  const mainImage = product.images[0];
   const hasDiscount =
     product.compareAtPrice && product.compareAtPrice > product.price;
 
@@ -75,53 +75,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
         {/* Image Gallery */}
-        <div className="space-y-4">
-          <div className="aspect-square overflow-hidden border-3 border-comic-ink bg-comic-light-gray shadow-comic">
-            {mainImage ? (
-              <img
-                src={mainImage.url}
-                alt={mainImage.altText ?? product.title}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-comic-ink/30">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="64"
-                  height="64"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                  <circle cx="9" cy="9" r="2" />
-                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                </svg>
-              </div>
-            )}
-          </div>
-
-          {/* Thumbnail gallery */}
-          {product.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-3">
-              {product.images.map((img) => (
-                <div
-                  key={img.id}
-                  className="aspect-square overflow-hidden border-2 border-comic-ink bg-comic-light-gray"
-                >
-                  <img
-                    src={img.url}
-                    alt={img.altText ?? ""}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ProductImageGallery
+          images={product.images}
+          productTitle={product.title}
+        />
 
         {/* Product Info */}
         <div>
@@ -157,7 +114,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 id: product.id,
                 title: product.title,
                 price: product.price,
-                image: mainImage?.url ?? null,
+                image: product.images[0]?.url ?? null,
               }}
             />
           </div>
