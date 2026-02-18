@@ -31,6 +31,7 @@ export async function PUT(req: NextRequest) {
         const validKeys = [
             "site_title", "site_description", "hero_heading", "hero_subheading",
             "footer_text", "footer_copyright", "favicon_url", "banner_image_url", "shop_name",
+            "theme_config",
         ];
 
         if (!validKeys.includes(key)) {

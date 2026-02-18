@@ -38,7 +38,7 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="text-center">
             <h1
-              className={`font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl ${settings.banner_image_url ? "text-white" : "text-white"
+              className={`font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl ${settings.banner_image_url ? "text-comic-on-accent" : "text-comic-on-accent"
                 }`}
             >
               {headingParts.length > 1 ? (
@@ -58,7 +58,7 @@ export default async function HomePage() {
               )}
             </h1>
             <p
-              className={`mx-auto mt-6 max-w-2xl text-lg font-bold leading-relaxed ${settings.banner_image_url ? "text-white/90" : "text-white/70"
+              className={`mx-auto mt-6 max-w-2xl text-lg font-bold leading-relaxed ${settings.banner_image_url ? "text-comic-on-accent/90" : "text-comic-on-accent/70"
                 }`}
             >
               {settings.hero_subheading}
@@ -66,7 +66,7 @@ export default async function HomePage() {
             <div className="mt-10 flex items-center justify-center gap-4">
               <Link
                 href="/products"
-                className="min-h-[44px] cursor-pointer border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-white shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed"
+                className="min-h-[44px] cursor-pointer border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed"
               >
                 Shop Now
               </Link>

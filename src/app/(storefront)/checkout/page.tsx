@@ -67,7 +67,7 @@ export default function CheckoutPage() {
           <p className="font-bold text-comic-ink/60">Your cart is empty.</p>
           <Link
             href="/products"
-            className="mt-6 inline-block border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-white shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover"
+            className="mt-6 inline-block border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover"
           >
             Continue Shopping
           </Link>
@@ -209,7 +209,7 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={applySavedDetails}
-                  className="cursor-pointer border-2 border-comic-ink bg-comic-cyan px-3 py-1 text-sm font-bold text-white transition-colors hover:bg-comic-cyan-dark"
+                  className="cursor-pointer border-2 border-comic-ink bg-comic-cyan px-3 py-1 text-sm font-bold text-comic-on-secondary transition-colors hover:bg-comic-cyan-dark"
                 >
                   Use saved details
                 </button>
@@ -334,7 +334,7 @@ export default function CheckoutPage() {
             <div className="mt-4 border-t-2 border-comic-ink pt-4">
               <div className="flex items-center justify-between text-lg font-bold">
                 <span className="text-comic-ink">Total</span>
-                <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-white">
+                <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-comic-on-accent">
                   {formatPrice(totalPrice())}
                 </span>
               </div>
@@ -349,7 +349,7 @@ export default function CheckoutPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-6 w-full cursor-pointer border-3 border-comic-ink bg-comic-red py-3 font-display text-base font-bold text-white shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed disabled:opacity-50 disabled:translate-x-0 disabled:translate-y-0"
+              className="mt-6 w-full cursor-pointer border-3 border-comic-ink bg-comic-red py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed disabled:opacity-50 disabled:translate-x-0 disabled:translate-y-0"
             >
               {loading ? "Processing..." : "Place Order"}
             </button>

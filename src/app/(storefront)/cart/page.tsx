@@ -38,7 +38,7 @@ export default function CartPage() {
           <p className="font-bold text-comic-ink/60">Your cart is empty.</p>
           <Link
             href="/products"
-            className="mt-6 inline-block min-h-[44px] cursor-pointer border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-white shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover"
+            className="mt-6 inline-block min-h-[44px] cursor-pointer border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover"
           >
             Continue Shopping
           </Link>
@@ -151,11 +151,11 @@ export default function CartPage() {
       <div className="mt-8 border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
         <div className="flex items-center justify-between text-lg font-bold text-comic-ink">
           <span>Total</span>
-          <span className="border-2 border-comic-ink bg-comic-yellow px-3 py-1 text-white">{formatPrice(totalPrice())}</span>
+          <span className="border-2 border-comic-ink bg-comic-yellow px-3 py-1 text-comic-on-accent">{formatPrice(totalPrice())}</span>
         </div>
         <Link
           href="/checkout"
-          className="mt-6 block min-h-[44px] w-full cursor-pointer border-3 border-comic-ink bg-comic-red py-3 text-center font-display text-base font-bold text-white shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed"
+          className="mt-6 block min-h-[44px] w-full cursor-pointer border-3 border-comic-ink bg-comic-red py-3 text-center font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed"
         >
           Proceed to Checkout
         </Link>

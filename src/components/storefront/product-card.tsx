@@ -23,7 +23,7 @@ export function ProductCard({ product }: ProductCardProps) {
       className="group relative block cursor-pointer overflow-hidden border-3 border-comic-ink bg-comic-panel shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed"
     >
       {hasDiscount && (
-        <div className="absolute right-2 top-2 z-10 flex h-12 w-12 items-center justify-center bg-comic-red font-display text-xs font-bold text-white comic-starburst">
+        <div className="absolute right-2 top-2 z-10 flex h-12 w-12 items-center justify-center bg-comic-red font-display text-xs font-bold text-comic-on-primary comic-starburst">
           SALE
         </div>
       )}
@@ -61,7 +61,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.title}
         </h3>
         <div className="mt-2 flex items-center gap-2">
-          <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-lg font-bold text-white">
+          <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-lg font-bold text-comic-on-accent">
             {formatPrice(product.price)}
           </span>
           {hasDiscount && (

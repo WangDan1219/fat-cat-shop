@@ -19,7 +19,7 @@ export function Header({ shopName = "Fat Cat" }: { shopName?: string }) {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="font-display text-2xl font-bold text-white transition-transform duration-200 hover:rotate-[-2deg]"
+          className="font-display text-2xl font-bold text-comic-on-accent transition-transform duration-200 hover:rotate-[-2deg]"
         >
           {shopName}
         </Link>
@@ -27,7 +27,7 @@ export function Header({ shopName = "Fat Cat" }: { shopName?: string }) {
         <nav className="hidden items-center gap-8 sm:flex">
           <Link
             href="/products"
-            className="cursor-pointer text-base font-bold text-white transition-all duration-200 hover:text-comic-red"
+            className="cursor-pointer text-base font-bold text-comic-on-accent transition-all duration-200 hover:text-comic-red"
           >
             Shop
           </Link>
@@ -35,7 +35,7 @@ export function Header({ shopName = "Fat Cat" }: { shopName?: string }) {
 
         <Link
           href="/cart"
-          className="relative flex min-h-[44px] cursor-pointer items-center gap-2 border-3 border-comic-ink bg-comic-red px-5 py-2 font-bold text-white shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed"
+          className="relative flex min-h-[44px] cursor-pointer items-center gap-2 border-3 border-comic-ink bg-comic-red px-5 py-2 font-bold text-comic-on-primary shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed"
           aria-label={`Shopping cart${mounted && itemCount > 0 ? `, ${itemCount} items` : ""}`}
         >
           <svg
@@ -56,7 +56,7 @@ export function Header({ shopName = "Fat Cat" }: { shopName?: string }) {
           </svg>
           Cart
           {mounted && itemCount > 0 && (
-            <span className="flex h-6 w-6 items-center justify-center border-2 border-comic-ink bg-comic-cyan text-xs font-bold text-white">
+            <span className="flex h-6 w-6 items-center justify-center border-2 border-comic-ink bg-comic-cyan text-xs font-bold text-comic-on-secondary">
               {itemCount}
             </span>
           )}

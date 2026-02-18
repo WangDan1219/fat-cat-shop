@@ -12,6 +12,7 @@ export interface SiteSettingsMap {
     favicon_url: string;
     banner_image_url: string;
     shop_name: string;
+    theme_config: string;
 }
 
 const DEFAULTS: SiteSettingsMap = {
@@ -24,6 +25,7 @@ const DEFAULTS: SiteSettingsMap = {
     favicon_url: "",
     banner_image_url: "",
     shop_name: "Fat Cat",
+    theme_config: "",
 };
 
 export async function getSiteSettings(): Promise<SiteSettingsMap> {
