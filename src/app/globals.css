@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme inline {
+@theme {
   --color-comic-red: #7C3AED;
   --color-comic-red-dark: #6D28D9;
   --color-comic-cyan: #DB2777;
