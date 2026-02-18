@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { ThemePresetCard } from "@/components/admin/theme-preset-card";
 import { ThemeColorEditor } from "@/components/admin/theme-color-editor";
 import { ThemeAiGenerator } from "@/components/admin/theme-ai-generator";
 import { PRESETS } from "@/lib/theme/presets";
+import { buildCssVars } from "@/lib/theme/build-css-vars";
 import type { ThemeColors } from "@/lib/theme/types";
 
 const presetList = Object.values(PRESETS);
@@ -15,6 +16,8 @@ export default function AppearancePage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const overrideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     async function load() {
@@ -34,38 +37,67 @@ export default function AppearancePage() {
     load();
   }, []);
 
-  async function handleSave() {
+  const pushThemeToPreview = useCallback((preset: string, overrides: Partial<ThemeColors>) => {
+    const presetObj = PRESETS[preset];
+    if (!presetObj) return;
+    const cssVars = buildCssVars(presetObj, overrides);
+    // Push to preview iframe
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: "theme-update", cssVars },
+      window.location.origin,
+    );
+  }, []);
+
+  const saveTheme = useCallback(async (preset: string, overrides: Partial<ThemeColors>) => {
     setSaving(true);
     setSaved(false);
+
+    // Push to preview immediately (no server round-trip)
+    pushThemeToPreview(preset, overrides);
 
     try {
       const res = await fetch("/api/admin/theme", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          preset: activePreset,
-          customOverrides: Object.keys(customOverrides).length > 0 ? customOverrides : undefined,
+          preset,
+          customOverrides: Object.keys(overrides).length > 0 ? overrides : undefined,
         }),
       });
 
       if (res.ok) {
         setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
+        setTimeout(() => setSaved(false), 2000);
       }
     } catch {
       // handle silently
     } finally {
       setSaving(false);
     }
-  }
+  }, [pushThemeToPreview]);
 
   function handlePresetSelect(id: string) {
     setActivePreset(id);
     setCustomOverrides({});
+    saveTheme(id, {});
+  }
+
+  function handleOverridesChange(overrides: Partial<ThemeColors>) {
+    setCustomOverrides(overrides);
+    // Instant preview push
+    pushThemeToPreview(activePreset, overrides);
+
+    if (overrideTimerRef.current) {
+      clearTimeout(overrideTimerRef.current);
+    }
+    overrideTimerRef.current = setTimeout(() => {
+      saveTheme(activePreset, overrides);
+    }, 600);
   }
 
   function handleAiPalette(colors: Partial<ThemeColors>) {
     setCustomOverrides(colors);
+    saveTheme(activePreset, colors);
   }
 
   if (loading) {
@@ -97,14 +129,9 @@ export default function AppearancePage() {
             Choose a theme preset or customize colors for your storefront.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
-          className="cursor-pointer rounded-full bg-teal-primary px-6 py-2 text-sm font-bold text-white transition-colors hover:bg-teal-dark disabled:opacity-50"
-        >
-          {saving ? "Saving..." : saved ? "Saved!" : "Publish Theme"}
-        </button>
+        <span className="text-sm text-warm-brown/50">
+          {saving ? "Saving..." : saved ? "Saved!" : ""}
+        </span>
       </div>
 
       {/* Preset grid */}
@@ -129,7 +156,7 @@ export default function AppearancePage() {
         <ThemeColorEditor
           baseColors={PRESETS[activePreset].colors}
           overrides={customOverrides}
-          onChange={setCustomOverrides}
+          onChange={handleOverridesChange}
         />
       </section>
 
@@ -148,7 +175,8 @@ export default function AppearancePage() {
           style={{ height: "500px" }}
         >
           <iframe
-            src={`/?_preview=1&_t=${Date.now()}`}
+            ref={iframeRef}
+            src="/"
             className="h-full w-full"
             title="Theme preview"
           />
