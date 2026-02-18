@@ -1,26 +1,33 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-teal-primary: #108474;
-  --color-teal-dark: #0a6b5e;
-  --color-teal-light: #14a890;
-  --color-peach: #fdf0e8;
-  --color-peach-dark: #f5dece;
-  --color-warm-brown: #5c4033;
-  --color-warm-gray: #f7f5f3;
-  --color-cream: #fffaf5;
+  --color-comic-red: #FF6B6B;
+  --color-comic-red-dark: #E85555;
+  --color-comic-cyan: #4ECDC4;
+  --color-comic-cyan-dark: #3AB5AD;
+  --color-comic-yellow: #FFDE59;
+  --color-comic-yellow-dark: #F0CC3A;
+  --color-comic-blue: #45B7D1;
+  --color-comic-pink: #FF8FAB;
+  --color-comic-ink: #1A1A2E;
+  --color-comic-paper: #FFF8E7;
+  --color-comic-panel: #FFFFFF;
+  --color-comic-muted: #6B7280;
+  --color-comic-light-gray: #F3F4F6;
 
-  --font-sans: "Epilogue", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Comfortaa", cursive;
+  --font-sans: "Comic Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Baloo 2", cursive;
 
-  --shadow-clay: 6px 6px 12px rgba(92, 64, 51, 0.08), -2px -2px 8px rgba(255, 255, 255, 0.8);
-  --shadow-clay-hover: 8px 8px 16px rgba(92, 64, 51, 0.12), -3px -3px 10px rgba(255, 255, 255, 0.9);
-  --shadow-clay-pressed: 2px 2px 6px rgba(92, 64, 51, 0.1), -1px -1px 4px rgba(255, 255, 255, 0.6);
+  --shadow-comic: 4px 4px 0px #1A1A2E;
+  --shadow-comic-hover: 6px 6px 0px #1A1A2E;
+  --shadow-comic-pressed: 2px 2px 0px #1A1A2E;
+  --shadow-comic-sm: 3px 3px 0px #1A1A2E;
+  --shadow-comic-color: 4px 4px 0px #FF6B6B;
 }
 
 body {
-  background: var(--color-cream);
-  color: var(--color-warm-brown);
+  background: var(--color-comic-paper);
+  color: var(--color-comic-ink);
   font-family: var(--font-sans);
 }
 
@@ -43,7 +50,45 @@ html {
 
 /* Focus ring for keyboard navigation */
 :focus-visible {
-  outline: 2px solid var(--color-teal-primary);
+  outline: 3px solid var(--color-comic-cyan);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* Comic halftone dot pattern */
+.comic-dots {
+  background-image: radial-gradient(circle, #1A1A2E 1px, transparent 1px);
+  background-size: 16px 16px;
+  opacity: 0.04;
+}
+
+/* Comic speech bubble pointer */
+.comic-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 24px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid #1A1A2E;
+}
+
+.comic-bubble::before {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 26px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #FFFFFF;
+  z-index: 1;
+}
+
+/* Starburst decoration for sale badges */
+.comic-starburst {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
 }

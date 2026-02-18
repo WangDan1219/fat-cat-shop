@@ -20,8 +20,8 @@ export default async function ProductsPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <h1 className="font-display text-3xl font-bold text-warm-brown">Shop</h1>
-      <p className="mt-2 text-warm-brown/70">
+      <h1 className="font-display text-3xl font-bold text-comic-ink">Shop</h1>
+      <p className="mt-2 font-bold text-comic-ink/70">
         Browse our collection of premium cat products.
       </p>
 
@@ -41,7 +41,7 @@ export default async function ProductsPage() {
       </div>
 
       {allProducts.length === 0 && (
-        <p className="mt-16 text-center text-warm-brown/50">
+        <p className="mt-16 text-center font-bold text-comic-ink/50">
           No products available yet. Check back soon!
         </p>
       )}

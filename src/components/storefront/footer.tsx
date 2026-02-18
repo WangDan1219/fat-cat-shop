@@ -10,27 +10,27 @@ export function Footer({
   copyrightName?: string;
 }) {
   return (
-    <footer className="border-t border-peach-dark/50 bg-peach">
+    <footer className="border-t-3 border-comic-ink bg-comic-cyan">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center gap-4">
           <Link
             href="/"
-            className="font-display text-xl font-bold text-teal-primary transition-colors duration-200 hover:text-teal-dark"
+            className="font-display text-xl font-bold text-comic-ink transition-transform duration-200 hover:rotate-[-2deg]"
           >
             {shopName}
           </Link>
-          <p className="text-center text-sm leading-relaxed text-warm-brown/70">
+          <p className="text-center text-sm font-bold leading-relaxed text-comic-ink/70">
             {tagline}
           </p>
           <nav className="flex gap-6">
             <Link
               href="/products"
-              className="cursor-pointer text-sm text-warm-brown/70 transition-colors duration-200 hover:text-teal-primary"
+              className="cursor-pointer border-b-2 border-transparent text-sm font-bold text-comic-ink/70 transition-all duration-200 hover:border-comic-ink hover:text-comic-ink"
             >
               Shop
             </Link>
           </nav>
-          <p className="text-xs text-warm-brown/50">
+          <p className="text-xs font-bold text-comic-ink/50">
             &copy; {new Date().getFullYear()} {copyrightName}. All rights reserved.
           </p>
         </div>
