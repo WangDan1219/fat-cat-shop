@@ -57,6 +57,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const hasDiscount =
     product.compareAtPrice && product.compareAtPrice > product.price;
+  const isOutOfStock = product.stock === 0;
+  const isLowStock = product.stock !== null && product.stock > 0 && product.stock <= 5;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -102,6 +104,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
             )}
           </div>
 
+          {isLowStock && (
+            <span className="mt-2 inline-block border-2 border-amber-500 bg-amber-50 px-2 py-0.5 text-sm font-bold text-amber-700">
+              Only {product.stock} left!
+            </span>
+          )}
+          {isOutOfStock && (
+            <span className="mt-2 inline-block border-2 border-comic-red bg-red-50 px-2 py-0.5 text-sm font-bold text-comic-red">
+              Out of stock
+            </span>
+          )}
+
           {product.description && (
             <div className="mt-6 text-comic-ink/80 leading-relaxed">
               <p>{product.description}</p>
@@ -116,6 +129,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 price: product.price,
                 image: product.images[0]?.url ?? null,
               }}
+              disabled={isOutOfStock}
             />
           </div>
 

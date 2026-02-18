@@ -42,6 +42,16 @@ export default function CheckoutPage() {
     note: "",
   });
 
+  const [discountInput, setDiscountInput] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState<{
+    code: string;
+    discountAmount: number;
+    type: string;
+    value: number;
+  } | null>(null);
+  const [discountError, setDiscountError] = useState<string | null>(null);
+  const [discountLoading, setDiscountLoading] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -121,6 +131,42 @@ export default function CheckoutPage() {
     setShowWelcomeBanner(false);
   }
 
+  async function applyDiscount() {
+    const code = discountInput.trim();
+    if (!code) return;
+
+    setDiscountLoading(true);
+    setDiscountError(null);
+    setAppliedDiscount(null);
+
+    try {
+      const subtotal = totalPrice();
+      const params = new URLSearchParams({
+        code,
+        subtotal: String(subtotal),
+        email: form.email,
+      });
+      const res = await fetch(`/api/validate-discount?${params}`);
+      const data = await res.json();
+
+      if (data.valid) {
+        setAppliedDiscount(data);
+      } else {
+        setDiscountError(data.error ?? "Invalid code");
+      }
+    } catch {
+      setDiscountError("Could not validate code");
+    } finally {
+      setDiscountLoading(false);
+    }
+  }
+
+  function removeDiscount() {
+    setAppliedDiscount(null);
+    setDiscountInput("");
+    setDiscountError(null);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -132,6 +178,7 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          discountCode: appliedDiscount?.code,
           items: items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
@@ -331,13 +378,72 @@ export default function CheckoutPage() {
                 </div>
               ))}
             </div>
-            <div className="mt-4 border-t-2 border-comic-ink pt-4">
+            <div className="mt-4 border-t-2 border-comic-ink pt-4 space-y-2">
+              {appliedDiscount && (
+                <div className="flex items-center justify-between text-sm font-bold text-green-700">
+                  <span>Discount ({appliedDiscount.code})</span>
+                  <span>-{formatPrice(appliedDiscount.discountAmount)}</span>
+                </div>
+              )}
               <div className="flex items-center justify-between text-lg font-bold">
                 <span className="text-comic-ink">Total</span>
                 <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-comic-on-accent">
-                  {formatPrice(totalPrice())}
+                  {formatPrice(
+                    Math.max(
+                      totalPrice() - (appliedDiscount?.discountAmount ?? 0),
+                      0,
+                    ),
+                  )}
                 </span>
               </div>
+            </div>
+
+            {/* Discount code input */}
+            <div className="mt-4 border-t-2 border-comic-ink pt-4">
+              {appliedDiscount ? (
+                <div className="flex items-center justify-between border-2 border-green-600 bg-green-50 px-3 py-2">
+                  <span className="text-sm font-bold text-green-700">
+                    {appliedDiscount.code} applied!
+                  </span>
+                  <button
+                    type="button"
+                    onClick={removeDiscount}
+                    className="text-xs font-bold text-green-700 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <p className="mb-2 text-xs font-bold text-comic-ink/60">
+                    Discount Code
+                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={discountInput}
+                      onChange={(e) =>
+                        setDiscountInput(e.target.value.toUpperCase())
+                      }
+                      placeholder="SAVE10"
+                      className="flex-1 border-2 border-comic-ink px-3 py-1.5 text-sm font-bold uppercase text-comic-ink outline-none focus:border-comic-cyan"
+                    />
+                    <button
+                      type="button"
+                      onClick={applyDiscount}
+                      disabled={discountLoading || !discountInput.trim()}
+                      className="border-2 border-comic-ink bg-comic-yellow px-3 py-1.5 text-sm font-bold text-comic-on-accent transition-colors hover:bg-comic-yellow/80 disabled:opacity-50"
+                    >
+                      {discountLoading ? "..." : "Apply"}
+                    </button>
+                  </div>
+                  {discountError && (
+                    <p className="mt-1 text-xs font-bold text-comic-error">
+                      {discountError}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {error && (

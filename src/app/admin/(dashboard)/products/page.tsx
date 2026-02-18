@@ -69,6 +69,9 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
                 Price
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-warm-brown/60">
+                Stock
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-warm-brown/60">
                 Actions
               </th>
             </tr>
@@ -114,6 +117,9 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
                 </td>
                 <td className="px-6 py-4 text-right text-sm font-medium text-warm-brown">
                   {formatPrice(product.price)}
+                </td>
+                <td className="px-6 py-4 text-right text-sm text-warm-brown/70">
+                  {product.stock !== null && product.stock !== undefined ? product.stock : "\u221E"}
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">

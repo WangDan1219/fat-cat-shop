@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { customers, customerAddresses, orders, orderLineItems, orderStatusHistory, products } from "@/lib/db/schema";
+import {
+  customers,
+  customerAddresses,
+  orders,
+  orderLineItems,
+  orderStatusHistory,
+  products,
+  discountCodes,
+  discountCodeUses,
+} from "@/lib/db/schema";
 import { checkoutSchema } from "@/lib/validators";
 import { nanoid } from "nanoid";
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod/v4";
+import { sendOrderConfirmation } from "@/lib/email";
+import { computeDiscountAmount } from "@/app/api/validate-discount/route";
 
 const checkoutRequestSchema = checkoutSchema.extend({
   items: z.array(
@@ -47,6 +58,71 @@ export async function POST(req: NextRequest) {
           { status: 400 },
         );
       }
+      // Stock check
+      if (product.stock !== null && product.stock < item.quantity) {
+        return NextResponse.json(
+          { error: `Not enough stock for "${product.title}"` },
+          { status: 400 },
+        );
+      }
+    }
+
+    // Validate discount code if provided
+    let appliedDiscount: {
+      id: string;
+      code: string;
+      type: string;
+      value: number;
+      discountAmount: number;
+      perCustomerLimit: number;
+      maxUses: number | null;
+      usedCount: number;
+    } | null = null;
+
+    if (parsed.discountCode) {
+      const discount = db
+        .select()
+        .from(discountCodes)
+        .where(eq(discountCodes.code, parsed.discountCode.toUpperCase()))
+        .get();
+
+      if (!discount) {
+        return NextResponse.json({ error: "Invalid discount code" }, { status: 400 });
+      }
+      if (!discount.active) {
+        return NextResponse.json({ error: "This discount code is no longer active" }, { status: 400 });
+      }
+      if (discount.expiresAt && new Date(discount.expiresAt) < new Date()) {
+        return NextResponse.json({ error: "This discount code has expired" }, { status: 400 });
+      }
+      if (discount.maxUses !== null && discount.usedCount >= discount.maxUses) {
+        return NextResponse.json({ error: "This discount code has reached its usage limit" }, { status: 400 });
+      }
+
+      // Per-customer limit check
+      const customerUses = db
+        .select()
+        .from(discountCodeUses)
+        .where(
+          eq(discountCodeUses.codeId, discount.id),
+        )
+        .all()
+        .filter((u) => u.customerEmail === parsed.email.toLowerCase());
+
+      if (customerUses.length >= discount.perCustomerLimit) {
+        return NextResponse.json({ error: "You have already used this discount code" }, { status: 400 });
+      }
+
+      // Compute subtotal first to calculate discount
+      const tempSubtotal = parsed.items.reduce((sum, item) => {
+        const product = productMap.get(item.productId)!;
+        return sum + product.price * item.quantity;
+      }, 0);
+
+      appliedDiscount = {
+        ...discount,
+        discountAmount: computeDiscountAmount(discount.type, discount.value, tempSubtotal),
+      };
     }
 
     const now = new Date().toISOString();
@@ -109,7 +185,8 @@ export async function POST(req: NextRequest) {
 
     const subtotal = lineItems.reduce((sum, li) => sum + li.total, 0);
     const shippingCost = 0;
-    const total = subtotal + shippingCost;
+    const discountAmount = appliedDiscount?.discountAmount ?? 0;
+    const total = Math.max(subtotal + shippingCost - discountAmount, 0);
 
     const shippingAddress = JSON.stringify({
       addressLine1: parsed.addressLine1,
@@ -133,6 +210,8 @@ export async function POST(req: NextRequest) {
         total,
         note: parsed.note ?? null,
         shippingAddress,
+        discountCode: appliedDiscount?.code ?? null,
+        discountAmount,
         createdAt: now,
         updatedAt: now,
       })
@@ -152,6 +231,51 @@ export async function POST(req: NextRequest) {
         createdAt: now,
       })
       .run();
+
+    // Record discount code use and increment counter
+    if (appliedDiscount) {
+      db.insert(discountCodeUses)
+        .values({
+          id: nanoid(),
+          codeId: appliedDiscount.id,
+          customerEmail: parsed.email.toLowerCase(),
+          orderId,
+          usedAt: now,
+        })
+        .run();
+
+      db.update(discountCodes)
+        .set({ usedCount: sql`used_count + 1`, updatedAt: now })
+        .where(eq(discountCodes.id, appliedDiscount.id))
+        .run();
+    }
+
+    // Decrement stock atomically for each item
+    for (const item of parsed.items) {
+      const product = productMap.get(item.productId)!;
+      if (product.stock !== null) {
+        db.update(products)
+          .set({ stock: sql`stock - ${item.quantity}` })
+          .where(eq(products.id, item.productId))
+          .run();
+      }
+    }
+
+    // Send order confirmation email (fire-and-forget)
+    sendOrderConfirmation({
+      to: parsed.email,
+      orderNumber,
+      firstName: parsed.firstName,
+      items: lineItems.map((li) => ({
+        title: li.title,
+        quantity: li.quantity,
+        unitPrice: li.unitPrice,
+        total: li.total,
+      })),
+      subtotal,
+      shippingCost,
+      total,
+    }).catch(() => {});
 
     if (parsed.paymentMethod === "stripe") {
       // Stripe integration placeholder

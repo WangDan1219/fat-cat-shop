@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { orders, orderStatusHistory } from "@/lib/db/schema";
+import { sendOrderShipped } from "@/lib/email";
 import { isAuthenticated, getCurrentUser } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -89,6 +90,22 @@ export async function PUT(req: NextRequest, context: RouteContext) {
         createdAt: now,
       })
       .run();
+
+    // Send shipped notification email (fire-and-forget)
+    if (status === "shipped") {
+      const fullOrder = await db.query.orders.findFirst({
+        where: eq(orders.id, id),
+        with: { customer: true },
+      });
+      if (fullOrder?.customer?.email) {
+        sendOrderShipped({
+          to: fullOrder.customer.email,
+          orderNumber: fullOrder.orderNumber,
+          firstName: fullOrder.customer.firstName,
+          trackingNote: note ?? null,
+        }).catch(() => {});
+      }
+    }
   }
 
   return NextResponse.json({ success: true });

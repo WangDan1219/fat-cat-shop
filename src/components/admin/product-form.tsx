@@ -19,6 +19,7 @@ interface ProductFormProps {
     categoryId: string | null;
     status: string;
     tags: string | null;
+    stock: number | null;
   };
   categories: Category[];
 }
@@ -38,6 +39,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     categoryId: product?.categoryId ?? "",
     status: product?.status ?? "draft",
     tags: product?.tags ?? "",
+    stock: product?.stock !== undefined && product?.stock !== null ? product.stock.toString() : "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -76,6 +78,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         categoryId: form.categoryId || null,
         status: form.status,
         tags: form.tags || null,
+        stock: form.stock.trim() !== "" ? parseInt(form.stock, 10) : null,
       };
 
       const url = isEditing
@@ -192,6 +195,21 @@ export function ProductForm({ product, categories }: ProductFormProps) {
             </option>
           ))}
         </select>
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium text-warm-brown/70">
+          Stock quantity
+        </label>
+        <input
+          type="number"
+          min="0"
+          value={form.stock}
+          onChange={(e) => updateField("stock", e.target.value)}
+          placeholder="Leave empty for unlimited"
+          className="w-full rounded-lg border border-warm-brown/20 px-4 py-2 text-sm text-warm-brown outline-none focus:border-teal-primary"
+        />
+        <p className="mt-1 text-xs text-warm-brown/50">Leave empty for unlimited stock</p>
       </div>
 
       <div>

@@ -27,6 +27,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
         compareAtPrice: parsed.compareAtPrice ?? null,
         categoryId: parsed.categoryId ?? null,
         tags: parsed.tags ?? null,
+        stock: parsed.stock !== undefined ? (parsed.stock ?? null) : undefined,
         updatedAt: now,
       })
       .where(eq(products.id, id))

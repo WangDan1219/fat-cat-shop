@@ -4,6 +4,7 @@ import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/utils";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { CartCrossSell } from "@/components/storefront/cart-cross-sell";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, totalPrice } = useCartStore();
@@ -173,6 +174,8 @@ export default function CartPage() {
           Continue Shopping
         </Link>
       </div>
+
+      <CartCrossSell />
     </div>
   );
 }

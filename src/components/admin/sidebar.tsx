@@ -11,6 +11,7 @@ const navItems = [
   { href: "/admin/products", label: "Products", icon: "package" },
   { href: "/admin/orders", label: "Orders", icon: "clipboard", showBadge: true },
   { href: "/admin/customers", label: "Customers", icon: "users" },
+  { href: "/admin/discounts", label: "Discounts", icon: "discount" },
   { href: "/admin/appearance", label: "Appearance", icon: "palette" },
   { href: "/admin/settings", label: "Settings", icon: "settings" },
 ];
@@ -57,6 +58,12 @@ const icons: Record<string, React.ReactNode> = {
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
       <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  discount: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 14 15 8" /><circle cx="9.5" cy="8.5" r=".5" fill="currentColor" /><circle cx="14.5" cy="13.5" r=".5" fill="currentColor" />
+      <path d="M3 7c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.42.59l7.06 7.06a2 2 0 0 1 0 2.83L13.41 19.4a2 2 0 0 1-2.83 0L3.52 12.35A2 2 0 0 1 3 10.93z" />
     </svg>
   ),
 };
