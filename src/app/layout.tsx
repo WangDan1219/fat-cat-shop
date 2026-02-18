@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
-import { Baloo_2, Comic_Neue } from "next/font/google";
+import { Rajdhani, Inter } from "next/font/google";
 import "./globals.css";
 import { getSiteSettings } from "@/lib/site-settings";
 
-const baloo2 = Baloo_2({
+const rajdhani = Rajdhani({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const comicNeue = Comic_Neue({
+const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
-  weight: ["300", "400", "700"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -37,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${baloo2.variable} ${comicNeue.variable} antialiased`}>
+      <body className={`${rajdhani.variable} ${inter.variable} antialiased`}>
         {children}
       </body>
     </html>

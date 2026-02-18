@@ -39,12 +39,12 @@ interface OrderResult {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: "border-comic-yellow bg-comic-yellow text-comic-ink",
+  pending: "border-comic-yellow bg-comic-yellow text-white",
   confirmed: "border-comic-blue bg-comic-blue text-white",
-  shipped: "border-comic-pink bg-comic-pink text-comic-ink",
-  delivered: "border-comic-cyan bg-comic-cyan text-comic-ink",
-  completed: "border-comic-cyan bg-comic-cyan text-comic-ink",
-  returned: "border-comic-yellow bg-comic-yellow text-comic-ink",
+  shipped: "border-comic-pink bg-comic-pink text-white",
+  delivered: "border-comic-cyan bg-comic-cyan text-white",
+  completed: "border-comic-cyan bg-comic-cyan text-white",
+  returned: "border-comic-yellow bg-comic-yellow text-white",
   cancelled: "border-comic-red bg-comic-red text-white",
 };
 
@@ -105,7 +105,7 @@ export default function OrderTrackPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-sm font-bold text-comic-ink/70">
-              Order Number <span className="text-comic-red">*</span>
+              Order Number <span className="text-comic-error">*</span>
             </label>
             <input
               type="text"
@@ -118,7 +118,7 @@ export default function OrderTrackPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-bold text-comic-ink/70">
-              Email <span className="text-comic-red">*</span>
+              Email <span className="text-comic-error">*</span>
             </label>
             <input
               type="email"
@@ -132,7 +132,7 @@ export default function OrderTrackPage() {
         </div>
 
         {error && (
-          <p className="mt-4 border-2 border-comic-red bg-comic-red/10 p-3 text-sm font-bold text-comic-red">
+          <p className="mt-4 border-2 border-comic-error bg-comic-error/10 p-3 text-sm font-bold text-comic-error">
             {error}
           </p>
         )}
@@ -207,7 +207,7 @@ function OrderDetails({ order }: { order: OrderResult }) {
           </div>
           <div className="flex justify-between text-lg font-bold">
             <span className="text-comic-ink">Total</span>
-            <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5">{formatPrice(order.total)}</span>
+            <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-white">{formatPrice(order.total)}</span>
           </div>
         </div>
       </div>

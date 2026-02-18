@@ -61,7 +61,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.title}
         </h3>
         <div className="mt-2 flex items-center gap-2">
-          <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-lg font-bold text-comic-ink">
+          <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-lg font-bold text-white">
             {formatPrice(product.price)}
           </span>
           {hasDiscount && (

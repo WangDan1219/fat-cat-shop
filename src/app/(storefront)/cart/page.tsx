@@ -99,7 +99,7 @@ export default function CartPage() {
                 onClick={() =>
                   updateQuantity(item.productId, item.quantity - 1)
                 }
-                className="flex h-9 w-9 min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center border-2 border-comic-ink font-bold text-comic-ink transition-all duration-200 hover:bg-comic-yellow active:bg-comic-yellow-dark"
+                className="flex h-9 w-9 min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center border-2 border-comic-ink font-bold text-comic-ink transition-all duration-200 hover:bg-comic-red/10 active:bg-comic-red/20"
                 aria-label={`Decrease quantity of ${item.title}`}
               >
                 -
@@ -111,7 +111,7 @@ export default function CartPage() {
                 onClick={() =>
                   updateQuantity(item.productId, item.quantity + 1)
                 }
-                className="flex h-9 w-9 min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center border-2 border-comic-ink font-bold text-comic-ink transition-all duration-200 hover:bg-comic-yellow active:bg-comic-yellow-dark"
+                className="flex h-9 w-9 min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center border-2 border-comic-ink font-bold text-comic-ink transition-all duration-200 hover:bg-comic-red/10 active:bg-comic-red/20"
                 aria-label={`Increase quantity of ${item.title}`}
               >
                 +
@@ -151,7 +151,7 @@ export default function CartPage() {
       <div className="mt-8 border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
         <div className="flex items-center justify-between text-lg font-bold text-comic-ink">
           <span>Total</span>
-          <span className="border-2 border-comic-ink bg-comic-yellow px-3 py-1">{formatPrice(totalPrice())}</span>
+          <span className="border-2 border-comic-ink bg-comic-yellow px-3 py-1 text-white">{formatPrice(totalPrice())}</span>
         </div>
         <Link
           href="/checkout"
