@@ -48,22 +48,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Breadcrumb */}
-      <nav className="mb-8 flex items-center gap-2 text-sm text-warm-brown/60">
-        <Link href="/" className="hover:text-teal-primary">
+      <nav className="mb-8 flex items-center gap-2 text-sm font-bold text-comic-ink/60">
+        <Link href="/" className="hover:text-comic-red">
           Home
         </Link>
         <span>/</span>
-        <Link href="/products" className="hover:text-teal-primary">
+        <Link href="/products" className="hover:text-comic-red">
           Shop
         </Link>
         <span>/</span>
-        <span className="text-warm-brown">{product.title}</span>
+        <span className="text-comic-ink">{product.title}</span>
       </nav>
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
         {/* Image Gallery */}
         <div className="space-y-4">
-          <div className="aspect-square overflow-hidden rounded-2xl bg-warm-gray">
+          <div className="aspect-square overflow-hidden border-3 border-comic-ink bg-comic-light-gray shadow-comic">
             {mainImage ? (
               <img
                 src={mainImage.url}
@@ -71,7 +71,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-warm-brown/30">
+              <div className="flex h-full w-full items-center justify-center text-comic-ink/30">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="64"
@@ -79,7 +79,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1"
+                  strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -97,7 +97,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {product.images.map((img) => (
                 <div
                   key={img.id}
-                  className="aspect-square overflow-hidden rounded-lg bg-warm-gray"
+                  className="aspect-square overflow-hidden border-2 border-comic-ink bg-comic-light-gray"
                 >
                   <img
                     src={img.url}
@@ -113,27 +113,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Product Info */}
         <div>
           {product.category && (
-            <p className="mb-2 text-sm font-medium text-teal-primary">
+            <p className="mb-2 inline-block border-2 border-comic-ink bg-comic-cyan px-2 py-0.5 text-sm font-bold text-comic-on-secondary">
               {product.category.name}
             </p>
           )}
-          <h1 className="font-display text-3xl font-bold text-warm-brown">
+          <h1 className="font-display text-3xl font-bold text-comic-ink">
             {product.title}
           </h1>
 
           <div className="mt-4 flex items-center gap-3">
-            <span className="text-3xl font-bold text-teal-primary">
+            <span className="border-3 border-comic-ink bg-comic-yellow px-3 py-1 text-3xl font-bold text-comic-on-accent shadow-comic-sm">
               {formatPrice(product.price)}
             </span>
             {hasDiscount && (
-              <span className="text-lg text-warm-brown/50 line-through">
+              <span className="text-lg text-comic-muted line-through">
                 {formatPrice(product.compareAtPrice!)}
               </span>
             )}
           </div>
 
           {product.description && (
-            <div className="mt-6 text-warm-brown/80 leading-relaxed">
+            <div className="mt-6 text-comic-ink/80 leading-relaxed">
               <p>{product.description}</p>
             </div>
           )}
@@ -154,7 +154,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {product.tags.split(",").map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-peach px-3 py-1 text-xs text-warm-brown/70"
+                  className="border-2 border-comic-ink bg-comic-light-gray px-3 py-1 text-xs font-bold text-comic-ink/70"
                 >
                   {tag.trim()}
                 </span>

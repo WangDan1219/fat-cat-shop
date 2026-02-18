@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
-import { Comfortaa, Epilogue } from "next/font/google";
+import { Rajdhani, Inter } from "next/font/google";
 import "./globals.css";
 import { getSiteSettings } from "@/lib/site-settings";
+import { getActiveTheme } from "@/lib/theme/get-active-theme";
+import { buildCssVars } from "@/lib/theme/build-css-vars";
+import { buildGoogleFontsUrl } from "@/lib/theme/google-fonts";
+import { mangaPreset } from "@/lib/theme/presets/manga";
 
-const comfortaa = Comfortaa({
+const rajdhani = Rajdhani({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const epilogue = Epilogue({
+const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
@@ -29,14 +34,31 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const activeTheme = await getActiveTheme();
+  const cssVars = buildCssVars(activeTheme.preset, activeTheme.customOverrides);
+
+  const isDefaultPreset = activeTheme.preset.id === mangaPreset.id;
+  const googleFontsUrl = isDefaultPreset
+    ? null
+    : buildGoogleFontsUrl(activeTheme.preset);
+
   return (
-    <html lang="en">
-      <body className={`${comfortaa.variable} ${epilogue.variable} antialiased`}>
+    <html lang="en" style={cssVars}>
+      <head>
+        {googleFontsUrl && (
+          <>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+            <link rel="stylesheet" href={googleFontsUrl} />
+          </>
+        )}
+      </head>
+      <body className={`${rajdhani.variable} ${inter.variable} antialiased`}>
         {children}
       </body>
     </html>

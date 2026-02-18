@@ -30,7 +30,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
   return (
     <button
       onClick={handleAdd}
-      className="min-h-[44px] w-full cursor-pointer rounded-full border-2 border-teal-dark/10 bg-teal-primary px-6 py-3 font-display text-sm font-bold text-white shadow-clay transition-all duration-200 ease-out hover:bg-teal-dark hover:shadow-clay-hover hover:-translate-y-0.5 active:shadow-clay-pressed active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0"
+      className="min-h-[44px] w-full cursor-pointer border-3 border-comic-ink bg-comic-red px-6 py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed disabled:translate-x-0 disabled:translate-y-0 disabled:opacity-70 disabled:shadow-comic-pressed"
       disabled={added}
       aria-label={added ? `${product.title} added to cart` : `Add ${product.title} to cart`}
     >

@@ -15,11 +15,11 @@ export function Header({ shopName = "Fat Cat" }: { shopName?: string }) {
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-peach-dark/50 bg-cream/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b-3 border-comic-ink bg-comic-yellow">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="font-display text-2xl font-bold text-teal-primary transition-colors duration-200 hover:text-teal-dark"
+          className="font-display text-2xl font-bold text-comic-on-accent transition-transform duration-200 hover:rotate-[-2deg]"
         >
           {shopName}
         </Link>
@@ -27,7 +27,7 @@ export function Header({ shopName = "Fat Cat" }: { shopName?: string }) {
         <nav className="hidden items-center gap-8 sm:flex">
           <Link
             href="/products"
-            className="cursor-pointer text-sm font-medium text-warm-brown transition-colors duration-200 hover:text-teal-primary"
+            className="cursor-pointer text-base font-bold text-comic-on-accent transition-all duration-200 hover:text-comic-red"
           >
             Shop
           </Link>
@@ -35,7 +35,7 @@ export function Header({ shopName = "Fat Cat" }: { shopName?: string }) {
 
         <Link
           href="/cart"
-          className="relative flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full border-2 border-teal-dark/10 bg-teal-primary px-5 py-2 text-sm font-medium text-white shadow-clay transition-all duration-200 ease-out hover:bg-teal-dark hover:shadow-clay-hover active:shadow-clay-pressed"
+          className="relative flex min-h-[44px] cursor-pointer items-center gap-2 border-3 border-comic-ink bg-comic-red px-5 py-2 font-bold text-comic-on-primary shadow-comic transition-all duration-200 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed"
           aria-label={`Shopping cart${mounted && itemCount > 0 ? `, ${itemCount} items` : ""}`}
         >
           <svg
@@ -45,7 +45,7 @@ export function Header({ shopName = "Fat Cat" }: { shopName?: string }) {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
@@ -56,7 +56,7 @@ export function Header({ shopName = "Fat Cat" }: { shopName?: string }) {
           </svg>
           Cart
           {mounted && itemCount > 0 && (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-teal-primary">
+            <span className="flex h-6 w-6 items-center justify-center border-2 border-comic-ink bg-comic-cyan text-xs font-bold text-comic-on-secondary">
               {itemCount}
             </span>
           )}

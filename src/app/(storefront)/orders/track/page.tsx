@@ -39,13 +39,13 @@ interface OrderResult {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800",
-  confirmed: "bg-blue-100 text-blue-800",
-  shipped: "bg-purple-100 text-purple-800",
-  delivered: "bg-green-100 text-green-800",
-  completed: "bg-emerald-100 text-emerald-800",
-  returned: "bg-orange-100 text-orange-800",
-  cancelled: "bg-red-100 text-red-800",
+  pending: "border-comic-yellow bg-comic-yellow text-comic-on-accent",
+  confirmed: "border-comic-blue bg-comic-blue text-comic-on-accent",
+  shipped: "border-comic-pink bg-comic-pink text-comic-on-accent",
+  delivered: "border-comic-cyan bg-comic-cyan text-comic-on-secondary",
+  completed: "border-comic-cyan bg-comic-cyan text-comic-on-secondary",
+  returned: "border-comic-yellow bg-comic-yellow text-comic-on-accent",
+  cancelled: "border-comic-red bg-comic-red text-comic-on-primary",
 };
 
 function formatDate(dateString: string): string {
@@ -94,18 +94,18 @@ export default function OrderTrackPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-      <h1 className="font-display text-3xl font-bold text-warm-brown">
+      <h1 className="font-display text-3xl font-bold text-comic-ink">
         Track Your Order
       </h1>
-      <p className="mt-2 text-warm-brown/60">
+      <p className="mt-2 font-bold text-comic-ink/60">
         Enter your order number and email to check the status of your order.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-8 rounded-xl bg-white p-6 shadow-clay">
+      <form onSubmit={handleSubmit} className="mt-8 border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-sm font-medium text-warm-brown/70">
-              Order Number <span className="text-red-400">*</span>
+            <label className="mb-1 block text-sm font-bold text-comic-ink/70">
+              Order Number <span className="text-comic-error">*</span>
             </label>
             <input
               type="text"
@@ -113,12 +113,12 @@ export default function OrderTrackPage() {
               onChange={(e) => setOrderNumber(e.target.value)}
               required
               placeholder="e.g. FC-20260215-ABC1"
-              className="w-full rounded-lg border border-warm-brown/20 px-4 py-2 text-sm text-warm-brown outline-none transition-colors focus:border-teal-primary"
+              className="w-full border-2 border-comic-ink px-4 py-2 text-sm font-bold text-comic-ink outline-none transition-colors focus:border-comic-cyan"
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-warm-brown/70">
-              Email <span className="text-red-400">*</span>
+            <label className="mb-1 block text-sm font-bold text-comic-ink/70">
+              Email <span className="text-comic-error">*</span>
             </label>
             <input
               type="email"
@@ -126,13 +126,13 @@ export default function OrderTrackPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full rounded-lg border border-warm-brown/20 px-4 py-2 text-sm text-warm-brown outline-none transition-colors focus:border-teal-primary"
+              className="w-full border-2 border-comic-ink px-4 py-2 text-sm font-bold text-comic-ink outline-none transition-colors focus:border-comic-cyan"
             />
           </div>
         </div>
 
         {error && (
-          <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+          <p className="mt-4 border-2 border-comic-error bg-comic-error/10 p-3 text-sm font-bold text-comic-error">
             {error}
           </p>
         )}
@@ -140,7 +140,7 @@ export default function OrderTrackPage() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-6 w-full rounded-full bg-teal-primary py-3 font-display text-sm font-bold text-white transition-colors hover:bg-teal-dark disabled:opacity-50 sm:w-auto sm:px-12"
+          className="mt-6 w-full cursor-pointer border-3 border-comic-ink bg-comic-red py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover disabled:opacity-50 sm:w-auto sm:px-12"
         >
           {loading ? "Tracking..." : "Track Order"}
         </button>
@@ -155,18 +155,18 @@ function OrderDetails({ order }: { order: OrderResult }) {
   return (
     <div className="mt-8 space-y-6">
       {/* Order Header */}
-      <div className="rounded-xl bg-white p-6 shadow-clay">
+      <div className="border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="font-display text-lg font-bold text-warm-brown">
+            <h2 className="font-display text-lg font-bold text-comic-ink">
               Order {order.orderNumber}
             </h2>
-            <p className="mt-1 text-sm text-warm-brown/60">
+            <p className="mt-1 text-sm font-bold text-comic-ink/60">
               Placed on {formatDate(order.createdAt)}
             </p>
           </div>
           <span
-            className={`rounded-full px-3 py-1 text-xs font-bold capitalize ${STATUS_COLORS[order.status] ?? "bg-gray-100 text-gray-800"}`}
+            className={`border-2 px-3 py-1 text-xs font-bold capitalize ${STATUS_COLORS[order.status] ?? "border-comic-ink bg-comic-light-gray text-comic-ink"}`}
           >
             {order.status}
           </span>
@@ -174,48 +174,48 @@ function OrderDetails({ order }: { order: OrderResult }) {
       </div>
 
       {/* Items */}
-      <div className="rounded-xl bg-white p-6 shadow-clay">
-        <h3 className="font-display text-lg font-bold text-warm-brown">
+      <div className="border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
+        <h3 className="font-display text-lg font-bold text-comic-ink">
           Items Ordered
         </h3>
-        <div className="mt-4 divide-y divide-warm-brown/10">
+        <div className="mt-4 divide-y-2 divide-comic-ink/10">
           {order.lineItems.map((item, i) => (
             <div key={i} className="flex items-center justify-between py-3 text-sm">
               <div>
-                <span className="font-medium text-warm-brown">{item.title}</span>
-                <span className="ml-2 text-warm-brown/60">x{item.quantity}</span>
+                <span className="font-bold text-comic-ink">{item.title}</span>
+                <span className="ml-2 font-bold text-comic-ink/60">x{item.quantity}</span>
               </div>
               <div className="text-right">
-                <span className="text-warm-brown/60">
+                <span className="font-bold text-comic-ink/60">
                   {formatPrice(item.unitPrice)} each
                 </span>
-                <span className="ml-4 font-medium text-warm-brown">
+                <span className="ml-4 font-bold text-comic-ink">
                   {formatPrice(item.total)}
                 </span>
               </div>
             </div>
           ))}
         </div>
-        <div className="mt-4 space-y-2 border-t border-warm-brown/10 pt-4">
-          <div className="flex justify-between text-sm text-warm-brown/70">
+        <div className="mt-4 space-y-2 border-t-2 border-comic-ink pt-4">
+          <div className="flex justify-between text-sm font-bold text-comic-ink/70">
             <span>Subtotal</span>
             <span>{formatPrice(order.subtotal)}</span>
           </div>
-          <div className="flex justify-between text-sm text-warm-brown/70">
+          <div className="flex justify-between text-sm font-bold text-comic-ink/70">
             <span>Shipping</span>
             <span>{order.shippingCost === 0 ? "Free" : formatPrice(order.shippingCost)}</span>
           </div>
           <div className="flex justify-between text-lg font-bold">
-            <span className="text-warm-brown">Total</span>
-            <span className="text-teal-primary">{formatPrice(order.total)}</span>
+            <span className="text-comic-ink">Total</span>
+            <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-comic-on-accent">{formatPrice(order.total)}</span>
           </div>
         </div>
       </div>
 
       {/* Status Timeline */}
       {order.statusHistory.length > 0 && (
-        <div className="rounded-xl bg-white p-6 shadow-clay">
-          <h3 className="font-display text-lg font-bold text-warm-brown">
+        <div className="border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
+          <h3 className="font-display text-lg font-bold text-comic-ink">
             Order Timeline
           </h3>
           <div className="mt-4 space-y-0">
@@ -223,20 +223,20 @@ function OrderDetails({ order }: { order: OrderResult }) {
               <div key={i} className="relative flex gap-4 pb-6 last:pb-0">
                 {/* Timeline line */}
                 {i < order.statusHistory.length - 1 && (
-                  <div className="absolute left-[7px] top-4 h-full w-0.5 bg-warm-brown/10" />
+                  <div className="absolute left-[7px] top-4 h-full w-0.5 bg-comic-ink/20" />
                 )}
                 {/* Dot */}
-                <div className="relative mt-1.5 h-4 w-4 flex-shrink-0 rounded-full border-2 border-teal-primary bg-white">
+                <div className="relative mt-1.5 h-4 w-4 flex-shrink-0 border-2 border-comic-ink bg-comic-panel">
                   {i === order.statusHistory.length - 1 && (
-                    <div className="absolute inset-1 rounded-full bg-teal-primary" />
+                    <div className="absolute inset-0.5 bg-comic-red" />
                   )}
                 </div>
                 {/* Content */}
                 <div>
-                  <p className="text-sm font-medium capitalize text-warm-brown">
+                  <p className="text-sm font-bold capitalize text-comic-ink">
                     {entry.toStatus}
                   </p>
-                  <p className="text-xs text-warm-brown/50">
+                  <p className="text-xs font-bold text-comic-ink/50">
                     {formatDate(entry.createdAt)}
                   </p>
                 </div>
@@ -248,11 +248,11 @@ function OrderDetails({ order }: { order: OrderResult }) {
 
       {/* Shipping Address */}
       {order.shippingAddress && (
-        <div className="rounded-xl bg-white p-6 shadow-clay">
-          <h3 className="font-display text-lg font-bold text-warm-brown">
+        <div className="border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
+          <h3 className="font-display text-lg font-bold text-comic-ink">
             Shipping Address
           </h3>
-          <div className="mt-3 text-sm leading-relaxed text-warm-brown/70">
+          <div className="mt-3 text-sm font-bold leading-relaxed text-comic-ink/70">
             <p>{order.shippingAddress.addressLine1}</p>
             {order.shippingAddress.addressLine2 && (
               <p>{order.shippingAddress.addressLine2}</p>

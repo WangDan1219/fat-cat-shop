@@ -50,8 +50,8 @@ export default function CheckoutPage() {
     return (
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="animate-pulse">
-          <div className="h-8 w-48 rounded bg-warm-gray" />
-          <div className="mt-8 h-96 rounded-xl bg-warm-gray" />
+          <div className="h-8 w-48 border-3 border-comic-ink/20 bg-comic-light-gray" />
+          <div className="mt-8 h-96 border-3 border-comic-ink/20 bg-comic-light-gray" />
         </div>
       </div>
     );
@@ -60,14 +60,14 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="font-display text-3xl font-bold text-warm-brown">
+        <h1 className="font-display text-3xl font-bold text-comic-ink">
           Checkout
         </h1>
         <div className="mt-12 text-center">
-          <p className="text-warm-brown/60">Your cart is empty.</p>
+          <p className="font-bold text-comic-ink/60">Your cart is empty.</p>
           <Link
             href="/products"
-            className="mt-6 inline-block rounded-full bg-teal-primary px-8 py-3 font-display text-sm font-bold text-white transition-colors hover:bg-teal-dark"
+            className="mt-6 inline-block border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover"
           >
             Continue Shopping
           </Link>
@@ -161,15 +161,15 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-      <h1 className="font-display text-3xl font-bold text-warm-brown">
+      <h1 className="font-display text-3xl font-bold text-comic-ink">
         Checkout
       </h1>
 
       <form onSubmit={handleSubmit} className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-5">
         {/* Customer Info */}
         <div className="space-y-6 lg:col-span-3">
-          <div className="rounded-xl bg-white p-6 shadow-sm">
-            <h2 className="font-display text-lg font-bold text-warm-brown">
+          <div className="border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
+            <h2 className="font-display text-lg font-bold text-comic-ink">
               Contact Information
             </h2>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -202,14 +202,14 @@ export default function CheckoutPage() {
             </div>
 
             {showWelcomeBanner && returningCustomer && (
-              <div className="mt-4 flex items-center justify-between rounded-lg border border-teal-primary/20 bg-teal-primary/10 px-4 py-3">
-                <span className="text-sm font-medium text-teal-primary">
+              <div className="mt-4 flex items-center justify-between border-2 border-comic-cyan bg-comic-cyan/20 px-4 py-3">
+                <span className="text-sm font-bold text-comic-ink">
                   Welcome back, {returningCustomer.firstName}!
                 </span>
                 <button
                   type="button"
                   onClick={applySavedDetails}
-                  className="rounded-md bg-teal-primary px-3 py-1 text-sm font-medium text-white transition-colors hover:bg-teal-dark"
+                  className="cursor-pointer border-2 border-comic-ink bg-comic-cyan px-3 py-1 text-sm font-bold text-comic-on-secondary transition-colors hover:bg-comic-cyan-dark"
                 >
                   Use saved details
                 </button>
@@ -217,8 +217,8 @@ export default function CheckoutPage() {
             )}
           </div>
 
-          <div className="rounded-xl bg-white p-6 shadow-sm">
-            <h2 className="font-display text-lg font-bold text-warm-brown">
+          <div className="border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
+            <h2 className="font-display text-lg font-bold text-comic-ink">
               Shipping Address
             </h2>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -262,49 +262,49 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="rounded-xl bg-white p-6 shadow-sm">
-            <h2 className="font-display text-lg font-bold text-warm-brown">
+          <div className="border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
+            <h2 className="font-display text-lg font-bold text-comic-ink">
               Payment Method
             </h2>
             <div className="mt-4 space-y-3">
-              <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-warm-brown/10 p-4 transition-colors hover:border-teal-primary">
+              <label className="flex cursor-pointer items-center gap-3 border-2 border-comic-ink p-4 transition-all hover:bg-comic-red/10">
                 <input
                   type="radio"
                   name="paymentMethod"
                   value="cod"
                   checked={form.paymentMethod === "cod"}
                   onChange={() => updateField("paymentMethod", "cod")}
-                  className="accent-teal-primary"
+                  className="accent-comic-red"
                 />
-                <span className="font-medium text-warm-brown">
+                <span className="font-bold text-comic-ink">
                   Cash on Delivery (COD)
                 </span>
               </label>
-              <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-warm-brown/10 p-4 transition-colors hover:border-teal-primary">
+              <label className="flex cursor-pointer items-center gap-3 border-2 border-comic-ink p-4 transition-all hover:bg-comic-red/10">
                 <input
                   type="radio"
                   name="paymentMethod"
                   value="stripe"
                   checked={form.paymentMethod === "stripe"}
                   onChange={() => updateField("paymentMethod", "stripe")}
-                  className="accent-teal-primary"
+                  className="accent-comic-red"
                 />
-                <span className="font-medium text-warm-brown">
+                <span className="font-bold text-comic-ink">
                   Pay with Card (Stripe)
                 </span>
               </label>
             </div>
           </div>
 
-          <div className="rounded-xl bg-white p-6 shadow-sm">
-            <h2 className="font-display text-lg font-bold text-warm-brown">
+          <div className="border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
+            <h2 className="font-display text-lg font-bold text-comic-ink">
               Order Notes
             </h2>
             <textarea
               value={form.note}
               onChange={(e) => updateField("note", e.target.value)}
               rows={3}
-              className="mt-4 w-full rounded-lg border border-warm-brown/20 px-4 py-2 text-sm text-warm-brown outline-none transition-colors focus:border-teal-primary"
+              className="mt-4 w-full border-2 border-comic-ink px-4 py-2 text-sm font-bold text-comic-ink outline-none transition-colors focus:border-comic-cyan"
               placeholder="Any special requests..."
             />
           </div>
@@ -312,8 +312,8 @@ export default function CheckoutPage() {
 
         {/* Order Summary */}
         <div className="lg:col-span-2">
-          <div className="sticky top-24 rounded-xl bg-white p-6 shadow-sm">
-            <h2 className="font-display text-lg font-bold text-warm-brown">
+          <div className="sticky top-24 border-3 border-comic-ink bg-comic-panel p-6 shadow-comic">
+            <h2 className="font-display text-lg font-bold text-comic-ink">
               Order Summary
             </h2>
             <div className="mt-4 space-y-3">
@@ -322,26 +322,26 @@ export default function CheckoutPage() {
                   key={item.productId}
                   className="flex items-center justify-between text-sm"
                 >
-                  <span className="text-warm-brown/80">
+                  <span className="font-bold text-comic-ink/80">
                     {item.title} &times; {item.quantity}
                   </span>
-                  <span className="font-medium text-warm-brown">
+                  <span className="font-bold text-comic-ink">
                     {formatPrice(item.price * item.quantity)}
                   </span>
                 </div>
               ))}
             </div>
-            <div className="mt-4 border-t border-warm-brown/10 pt-4">
+            <div className="mt-4 border-t-2 border-comic-ink pt-4">
               <div className="flex items-center justify-between text-lg font-bold">
-                <span className="text-warm-brown">Total</span>
-                <span className="text-teal-primary">
+                <span className="text-comic-ink">Total</span>
+                <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-comic-on-accent">
                   {formatPrice(totalPrice())}
                 </span>
               </div>
             </div>
 
             {error && (
-              <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+              <p className="mt-4 border-2 border-comic-error bg-comic-error/10 p-3 text-sm font-bold text-comic-error">
                 {error}
               </p>
             )}
@@ -349,7 +349,7 @@ export default function CheckoutPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-6 w-full rounded-full bg-teal-primary py-3 font-display text-sm font-bold text-white transition-colors hover:bg-teal-dark disabled:opacity-50"
+              className="mt-6 w-full cursor-pointer border-3 border-comic-ink bg-comic-red py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-comic-pressed disabled:opacity-50 disabled:translate-x-0 disabled:translate-y-0"
             >
               {loading ? "Processing..." : "Place Order"}
             </button>
@@ -377,9 +377,9 @@ function InputField({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-warm-brown/70">
+      <label className="mb-1 block text-sm font-bold text-comic-ink/70">
         {label}
-        {required && <span className="text-red-400"> *</span>}
+        {required && <span className="text-comic-error"> *</span>}
       </label>
       <input
         type={type}
@@ -387,7 +387,7 @@ function InputField({
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         required={required}
-        className="w-full rounded-lg border border-warm-brown/20 px-4 py-2 text-sm text-warm-brown outline-none transition-colors focus:border-teal-primary"
+        className="w-full border-2 border-comic-ink px-4 py-2 text-sm font-bold text-comic-ink outline-none transition-colors focus:border-comic-cyan"
       />
     </div>
   );

@@ -11,7 +11,7 @@ export default async function CheckoutSuccessPage({
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6 lg:px-8">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-teal-primary/10">
+      <div className="mx-auto flex h-16 w-16 items-center justify-center border-3 border-comic-ink bg-comic-cyan shadow-comic">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="32"
@@ -19,29 +19,29 @@ export default async function CheckoutSuccessPage({
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-teal-primary"
+          className="text-comic-on-secondary"
         >
           <path d="M20 6 9 17l-5-5" />
         </svg>
       </div>
-      <h1 className="mt-6 font-display text-3xl font-bold text-warm-brown">
+      <h1 className="mt-6 font-display text-3xl font-bold text-comic-ink">
         Order Confirmed!
       </h1>
       {order && (
-        <p className="mt-2 text-lg text-warm-brown/70">
-          Order number: <span className="font-bold text-teal-primary">{order}</span>
+        <p className="mt-2 text-lg font-bold text-comic-ink/70">
+          Order number: <span className="border-2 border-comic-ink bg-comic-yellow px-2 py-0.5 text-comic-on-accent">{order}</span>
         </p>
       )}
-      <p className="mt-4 text-warm-brown/60">
+      <p className="mt-4 font-bold text-comic-ink/60">
         Thank you for your purchase! We&apos;ll get your order ready as soon as
         possible.
       </p>
       <Link
         href="/products"
-        className="mt-8 inline-block rounded-full bg-teal-primary px-8 py-3 font-display text-sm font-bold text-white transition-colors hover:bg-teal-dark"
+        className="mt-8 inline-block border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover"
       >
         Continue Shopping
       </Link>
