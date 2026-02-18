@@ -1,9 +1,10 @@
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "@/components/storefront/add-to-cart-button";
+import { ProductCard } from "@/components/storefront/product-card";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -40,6 +41,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product || product.status !== "active") {
     notFound();
   }
+
+  const relatedProducts = product.categoryId
+    ? await db.query.products.findMany({
+        where: and(
+          eq(products.categoryId, product.categoryId),
+          eq(products.status, "active"),
+          ne(products.id, product.id),
+        ),
+        with: { images: true },
+        limit: 4,
+      })
+    : [];
 
   const mainImage = product.images[0];
   const hasDiscount =
@@ -163,6 +176,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
           )}
         </div>
       </div>
+
+      {relatedProducts.length > 0 && (
+        <section className="mt-16 border-t-3 border-comic-ink pt-12">
+          <h2 className="font-display text-2xl font-bold text-comic-ink">More from this category</h2>
+          <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4">
+            {relatedProducts.map((p) => (
+              <ProductCard
+                key={p.id}
+                product={{
+                  id: p.id,
+                  title: p.title,
+                  slug: p.slug,
+                  price: p.price,
+                  compareAtPrice: p.compareAtPrice,
+                  images: p.images.map((img) => ({ url: img.url, altText: img.altText })),
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

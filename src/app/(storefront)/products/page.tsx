@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { products } from "@/lib/db/schema";
+import { categories, products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { ProductSearch } from "@/components/storefront/product-search";
 import type { Metadata } from "next";
@@ -12,11 +12,16 @@ export const metadata: Metadata = {
 };
 
 export default async function ProductsPage() {
-  const allProducts = await db.query.products.findMany({
-    where: eq(products.status, "active"),
-    with: { images: true },
-    orderBy: (products, { desc }) => [desc(products.createdAt)],
-  });
+  const [allProducts, allCategories] = await Promise.all([
+    db.query.products.findMany({
+      where: eq(products.status, "active"),
+      with: { images: true, category: true },
+      orderBy: (products, { desc }) => [desc(products.createdAt)],
+    }),
+    db.query.categories.findMany({
+      orderBy: (c, { asc }) => [asc(c.sortOrder)],
+    }),
+  ]);
 
   const mappedProducts = allProducts.map((product) => ({
     id: product.id,
@@ -24,10 +29,18 @@ export default async function ProductsPage() {
     slug: product.slug,
     price: product.price,
     compareAtPrice: product.compareAtPrice,
+    categoryId: product.categoryId,
+    categoryName: product.category?.name ?? null,
     images: product.images.map((img) => ({
       url: img.url,
       altText: img.altText,
     })),
+  }));
+
+  const mappedCategories = allCategories.map((c) => ({
+    id: c.id,
+    name: c.name,
+    slug: c.slug,
   }));
 
   return (
@@ -37,7 +50,7 @@ export default async function ProductsPage() {
         Browse our collection of premium cat products.
       </p>
 
-      <ProductSearch products={mappedProducts} />
+      <ProductSearch products={mappedProducts} categories={mappedCategories} />
     </div>
   );
 }

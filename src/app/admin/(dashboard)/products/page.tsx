@@ -1,13 +1,38 @@
 import { db } from "@/lib/db";
+import { products } from "@/lib/db/schema";
+import { eq, like, and } from "drizzle-orm";
 import { formatPrice } from "@/lib/utils";
 import Link from "next/link";
 import { DeleteProductButton } from "@/components/admin/delete-product-button";
+import { ProductFilterBar } from "@/components/admin/product-filter-bar";
+import { Suspense } from "react";
 
-export default async function AdminProductsPage() {
-  const allProducts = await db.query.products.findMany({
-    with: { images: true, category: true },
-    orderBy: (products, { desc }) => [desc(products.createdAt)],
-  });
+interface AdminProductsPageProps {
+  searchParams: Promise<{ q?: string; status?: string; category?: string }>;
+}
+
+export default async function AdminProductsPage({ searchParams }: AdminProductsPageProps) {
+  const { q, status, category } = await searchParams;
+
+  const conditions = [];
+  if (q) conditions.push(like(products.title, `%${q}%`));
+  if (status && ["active", "draft", "archived"].includes(status)) {
+    conditions.push(eq(products.status, status as "active" | "draft" | "archived"));
+  }
+  if (category) conditions.push(eq(products.categoryId, category));
+
+  const [allProducts, allCategories] = await Promise.all([
+    db.query.products.findMany({
+      where: conditions.length > 0 ? and(...conditions) : undefined,
+      with: { images: true, category: true },
+      orderBy: (products, { desc }) => [desc(products.createdAt)],
+    }),
+    db.query.categories.findMany({
+      orderBy: (c, { asc }) => [asc(c.sortOrder)],
+    }),
+  ]);
+
+  const hasFilters = !!(q || status || category);
 
   return (
     <div>
@@ -22,6 +47,10 @@ export default async function AdminProductsPage() {
           Add Product
         </Link>
       </div>
+
+      <Suspense fallback={null}>
+        <ProductFilterBar categories={allCategories} />
+      </Suspense>
 
       <div className="mt-6 overflow-hidden rounded-xl bg-white shadow-sm">
         <table className="w-full">
@@ -103,7 +132,7 @@ export default async function AdminProductsPage() {
         </table>
         {allProducts.length === 0 && (
           <p className="px-6 py-8 text-center text-sm text-warm-brown/50">
-            No products yet. Create your first product!
+            {hasFilters ? "No products match your filters." : "No products yet. Create your first product!"}
           </p>
         )}
       </div>
