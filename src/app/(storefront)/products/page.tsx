@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { ProductCard } from "@/components/storefront/product-card";
+import { ProductSearch } from "@/components/storefront/product-search";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +18,18 @@ export default async function ProductsPage() {
     orderBy: (products, { desc }) => [desc(products.createdAt)],
   });
 
+  const mappedProducts = allProducts.map((product) => ({
+    id: product.id,
+    title: product.title,
+    slug: product.slug,
+    price: product.price,
+    compareAtPrice: product.compareAtPrice,
+    images: product.images.map((img) => ({
+      url: img.url,
+      altText: img.altText,
+    })),
+  }));
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <h1 className="font-display text-3xl font-bold text-comic-ink">Shop</h1>
@@ -25,26 +37,7 @@ export default async function ProductsPage() {
         Browse our collection of premium cat products.
       </p>
 
-      <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {allProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={{
-              ...product,
-              images: product.images.map((img) => ({
-                url: img.url,
-                altText: img.altText,
-              })),
-            }}
-          />
-        ))}
-      </div>
-
-      {allProducts.length === 0 && (
-        <p className="mt-16 text-center font-bold text-comic-ink/50">
-          No products available yet. Check back soon!
-        </p>
-      )}
+      <ProductSearch products={mappedProducts} />
     </div>
   );
 }

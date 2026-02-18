@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 
 interface AdminUser {
   id: string;
@@ -22,6 +23,7 @@ export default function AdminUsersPage() {
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   async function fetchUsers() {
     try {
@@ -69,9 +71,8 @@ export default function AdminUsersPage() {
     }
   }
 
-  async function handleDelete(id: string, name: string) {
-    if (!confirm(`Are you sure you want to delete admin "${name}"?`)) return;
-
+  async function handleDelete(id: string) {
+    setDeleteTarget(null);
     try {
       const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
       if (!res.ok) {
@@ -160,7 +161,7 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="px-6 py-4 text-right">
                   <button
-                    onClick={() => handleDelete(user.id, user.displayName)}
+                    onClick={() => setDeleteTarget({ id: user.id, name: user.displayName })}
                     className="text-sm text-red-500 transition-colors hover:text-red-700"
                   >
                     Delete
@@ -257,6 +258,16 @@ export default function AdminUsersPage() {
           </button>
         </form>
       </div>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete Admin"
+        message={`Are you sure you want to delete admin "${deleteTarget?.name ?? ""}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={() => deleteTarget && handleDelete(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

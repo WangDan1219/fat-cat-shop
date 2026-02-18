@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { ThemePresetCard } from "@/components/admin/theme-preset-card";
 import { ThemeColorEditor } from "@/components/admin/theme-color-editor";
 import { ThemeAiGenerator } from "@/components/admin/theme-ai-generator";
+import { AppearanceTabs, type AppearanceTab } from "@/components/admin/appearance-tabs";
+import { AppearancePreviewModal } from "@/components/admin/appearance-preview-modal";
 import { PRESETS } from "@/lib/theme/presets";
 import { buildCssVars } from "@/lib/theme/build-css-vars";
 import type { ThemeColors } from "@/lib/theme/types";
@@ -16,8 +18,11 @@ export default function AppearancePage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<AppearanceTab>("presets");
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const overrideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const desktopIframeRef = useRef<HTMLIFrameElement | null>(null);
+  const modalIframeRef = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -41,18 +46,15 @@ export default function AppearancePage() {
     const presetObj = PRESETS[preset];
     if (!presetObj) return;
     const cssVars = buildCssVars(presetObj, overrides);
-    // Push to preview iframe
-    iframeRef.current?.contentWindow?.postMessage(
-      { type: "theme-update", cssVars },
-      window.location.origin,
-    );
+    const message = { type: "theme-update", cssVars };
+    const origin = window.location.origin;
+    desktopIframeRef.current?.contentWindow?.postMessage(message, origin);
+    modalIframeRef.current?.contentWindow?.postMessage(message, origin);
   }, []);
 
   const saveTheme = useCallback(async (preset: string, overrides: Partial<ThemeColors>) => {
     setSaving(true);
     setSaved(false);
-
-    // Push to preview immediately (no server round-trip)
     pushThemeToPreview(preset, overrides);
 
     try {
@@ -84,7 +86,6 @@ export default function AppearancePage() {
 
   function handleOverridesChange(overrides: Partial<ThemeColors>) {
     setCustomOverrides(overrides);
-    // Instant preview push
     pushThemeToPreview(activePreset, overrides);
 
     if (overrideTimerRef.current) {
@@ -119,8 +120,9 @@ export default function AppearancePage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
+    <>
+      {/* Header */}
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold text-warm-brown">
             Appearance
@@ -129,59 +131,72 @@ export default function AppearancePage() {
             Choose a theme preset or customize colors for your storefront.
           </p>
         </div>
-        <span className="text-sm text-warm-brown/50">
+        <span className="text-sm text-warm-brown/50" aria-live="polite">
           {saving ? "Saving..." : saved ? "Saved!" : ""}
         </span>
       </div>
 
-      {/* Preset grid */}
-      <section>
-        <h2 className="mb-4 font-display text-lg font-bold text-warm-brown">
-          Theme Presets
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {presetList.map((preset) => (
-            <ThemePresetCard
-              key={preset.id}
-              preset={preset}
-              isActive={activePreset === preset.id}
-              onSelect={handlePresetSelect}
-            />
-          ))}
+      {/* Split-pane layout on lg+, stacked on smaller */}
+      <div className="flex gap-6" style={{ height: "calc(100vh - 160px)" }}>
+        {/* Left panel: tabbed controls */}
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-warm-brown/10 bg-white lg:max-w-[55%]">
+          <AppearanceTabs activeTab={activeTab} onTabChange={setActiveTab} />
+          <div id={`tabpanel-${activeTab}`} role="tabpanel" className="flex-1 overflow-y-auto p-6">
+            {activeTab === "presets" && (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {presetList.map((preset) => (
+                  <ThemePresetCard
+                    key={preset.id}
+                    preset={preset}
+                    isActive={activePreset === preset.id}
+                    onSelect={handlePresetSelect}
+                  />
+                ))}
+              </div>
+            )}
+            {activeTab === "colors" && (
+              <ThemeColorEditor
+                baseColors={PRESETS[activePreset].colors}
+                overrides={customOverrides}
+                onChange={handleOverridesChange}
+              />
+            )}
+            {activeTab === "ai" && (
+              <ThemeAiGenerator onPaletteGenerated={handleAiPalette} />
+            )}
+          </div>
         </div>
-      </section>
 
-      {/* Color editor */}
-      <section className="rounded-xl border border-warm-brown/10 bg-white p-6">
-        <ThemeColorEditor
-          baseColors={PRESETS[activePreset].colors}
-          overrides={customOverrides}
-          onChange={handleOverridesChange}
-        />
-      </section>
-
-      {/* AI Generator */}
-      <section className="rounded-xl border border-warm-brown/10 bg-white p-6">
-        <ThemeAiGenerator onPaletteGenerated={handleAiPalette} />
-      </section>
-
-      {/* Live preview */}
-      <section>
-        <h2 className="mb-4 font-display text-lg font-bold text-warm-brown">
-          Preview
-        </h2>
-        <div
-          className="overflow-hidden rounded-xl border border-warm-brown/10"
-          style={{ height: "500px" }}
-        >
+        {/* Right panel: live preview (desktop only) */}
+        <div className="hidden flex-1 overflow-hidden rounded-xl border border-warm-brown/10 lg:block">
           <iframe
-            ref={iframeRef}
+            ref={desktopIframeRef}
             src="/"
             className="h-full w-full"
             title="Theme preview"
           />
         </div>
-      </section>
-    </div>
+      </div>
+
+      {/* Floating preview button (mobile/tablet only) */}
+      <button
+        type="button"
+        onClick={() => setPreviewModalOpen(true)}
+        className="fixed bottom-6 right-6 z-40 flex cursor-pointer items-center gap-2 rounded-full bg-teal-primary px-5 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95 lg:hidden"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+        Preview
+      </button>
+
+      {/* Preview modal (mobile/tablet) */}
+      <AppearancePreviewModal
+        open={previewModalOpen}
+        onClose={() => setPreviewModalOpen(false)}
+        iframeRef={(el) => { modalIframeRef.current = el; }}
+      />
+    </>
   );
 }

@@ -39,12 +39,22 @@ export default async function CheckoutSuccessPage({
         Thank you for your purchase! We&apos;ll get your order ready as soon as
         possible.
       </p>
-      <Link
-        href="/products"
-        className="mt-8 inline-block border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover"
-      >
-        Continue Shopping
-      </Link>
+      <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+        {order && (
+          <Link
+            href={`/orders/track?order=${order}`}
+            className="inline-block border-3 border-comic-ink bg-comic-cyan px-8 py-3 font-display text-base font-bold text-comic-on-secondary shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover"
+          >
+            Track Your Order
+          </Link>
+        )}
+        <Link
+          href="/products"
+          className="inline-block border-3 border-comic-ink bg-comic-red px-8 py-3 font-display text-base font-bold text-comic-on-primary shadow-comic transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-comic-hover"
+        >
+          Continue Shopping
+        </Link>
+      </div>
     </div>
   );
 }

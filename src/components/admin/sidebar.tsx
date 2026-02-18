@@ -61,7 +61,11 @@ const icons: Record<string, React.ReactNode> = {
   ),
 };
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  onNavClick?: () => void;
+}
+
+export function AdminSidebar({ onNavClick }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [unfulfilledCount, setUnfulfilledCount] = useState<number>(0);
@@ -100,11 +104,12 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="flex w-64 flex-col border-r border-warm-brown/10 bg-white">
+    <aside className="flex h-full w-64 flex-col border-r border-warm-brown/10 bg-white">
       <div className="flex h-16 items-center border-b border-warm-brown/10 px-6">
         <Link
           href="/admin"
           className="font-display text-xl font-bold text-teal-primary"
+          onClick={onNavClick}
         >
           Fat Cat Admin
         </Link>
@@ -121,6 +126,7 @@ export function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavClick}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 isActive
@@ -149,6 +155,7 @@ export function AdminSidebar() {
         <Link
           href="/"
           className="mb-2 flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-warm-brown/60 transition-colors hover:text-teal-primary"
+          onClick={onNavClick}
         >
           View Shop &rarr;
         </Link>
