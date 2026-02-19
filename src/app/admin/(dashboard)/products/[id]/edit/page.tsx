@@ -3,6 +3,7 @@ import { products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { ProductForm } from "@/components/admin/product-form";
+import { DeleteProductButton } from "@/components/admin/delete-product-button";
 
 interface EditProductPageProps {
   params: Promise<{ id: string }>;
@@ -68,9 +69,12 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-warm-brown">
-        Edit Product
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-2xl font-bold text-warm-brown">
+          Edit Product
+        </h1>
+        <DeleteProductButton productId={product.id} />
+      </div>
       <div className="mt-6">
         <ProductForm
           product={product}
