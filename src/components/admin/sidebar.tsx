@@ -69,10 +69,11 @@ const icons: Record<string, React.ReactNode> = {
 };
 
 interface AdminSidebarProps {
+  shopName: string;
   onNavClick?: () => void;
 }
 
-export function AdminSidebar({ onNavClick }: AdminSidebarProps) {
+export function AdminSidebar({ shopName, onNavClick }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [unfulfilledCount, setUnfulfilledCount] = useState<number>(0);
@@ -118,7 +119,7 @@ export function AdminSidebar({ onNavClick }: AdminSidebarProps) {
           className="font-display text-xl font-bold text-teal-primary"
           onClick={onNavClick}
         >
-          Fat Cat Admin
+          {shopName} Admin
         </Link>
       </div>
 

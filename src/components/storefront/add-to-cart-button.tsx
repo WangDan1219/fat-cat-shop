@@ -10,10 +10,12 @@ interface AddToCartButtonProps {
     price: number;
     image: string | null;
   };
+  variantId?: string | null;
+  variantLabel?: string | null;
   disabled?: boolean;
 }
 
-export function AddToCartButton({ product, disabled }: AddToCartButtonProps) {
+export function AddToCartButton({ product, variantId, variantLabel, disabled }: AddToCartButtonProps) {
   const addItem = useCartStore((s) => s.addItem);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -24,6 +26,8 @@ export function AddToCartButton({ product, disabled }: AddToCartButtonProps) {
       title: product.title,
       price: product.price,
       image: product.image,
+      variantId: variantId ?? null,
+      variantLabel: variantLabel ?? null,
     }, qty);
     setAdded(true);
     setTimeout(() => {
