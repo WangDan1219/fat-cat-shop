@@ -1,9 +1,11 @@
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "@/components/storefront/add-to-cart-button";
+import { ProductImageGallery } from "@/components/storefront/product-image-gallery";
+import { ProductCard } from "@/components/storefront/product-card";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -41,9 +43,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const mainImage = product.images[0];
+  const relatedProducts = product.categoryId
+    ? await db.query.products.findMany({
+        where: and(
+          eq(products.categoryId, product.categoryId),
+          eq(products.status, "active"),
+          ne(products.id, product.id),
+        ),
+        with: { images: true },
+        limit: 4,
+      })
+    : [];
+
   const hasDiscount =
     product.compareAtPrice && product.compareAtPrice > product.price;
+  const isOutOfStock = product.stock === 0;
+  const isLowStock = product.stock !== null && product.stock > 0 && product.stock <= 5;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -62,53 +77,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
         {/* Image Gallery */}
-        <div className="space-y-4">
-          <div className="aspect-square overflow-hidden border-3 border-comic-ink bg-comic-light-gray shadow-comic">
-            {mainImage ? (
-              <img
-                src={mainImage.url}
-                alt={mainImage.altText ?? product.title}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-comic-ink/30">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="64"
-                  height="64"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                  <circle cx="9" cy="9" r="2" />
-                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                </svg>
-              </div>
-            )}
-          </div>
-
-          {/* Thumbnail gallery */}
-          {product.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-3">
-              {product.images.map((img) => (
-                <div
-                  key={img.id}
-                  className="aspect-square overflow-hidden border-2 border-comic-ink bg-comic-light-gray"
-                >
-                  <img
-                    src={img.url}
-                    alt={img.altText ?? ""}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ProductImageGallery
+          images={product.images}
+          productTitle={product.title}
+        />
 
         {/* Product Info */}
         <div>
@@ -132,6 +104,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
             )}
           </div>
 
+          {isLowStock && (
+            <span className="mt-2 inline-block border-2 border-amber-500 bg-amber-50 px-2 py-0.5 text-sm font-bold text-amber-700">
+              Only {product.stock} left!
+            </span>
+          )}
+          {isOutOfStock && (
+            <span className="mt-2 inline-block border-2 border-comic-red bg-red-50 px-2 py-0.5 text-sm font-bold text-comic-red">
+              Out of stock
+            </span>
+          )}
+
           {product.description && (
             <div className="mt-6 text-comic-ink/80 leading-relaxed">
               <p>{product.description}</p>
@@ -144,8 +127,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 id: product.id,
                 title: product.title,
                 price: product.price,
-                image: mainImage?.url ?? null,
+                image: product.images[0]?.url ?? null,
               }}
+              disabled={isOutOfStock}
             />
           </div>
 
@@ -163,6 +147,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
           )}
         </div>
       </div>
+
+      {relatedProducts.length > 0 && (
+        <section className="mt-16 border-t-3 border-comic-ink pt-12">
+          <h2 className="font-display text-2xl font-bold text-comic-ink">More from this category</h2>
+          <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4">
+            {relatedProducts.map((p) => (
+              <ProductCard
+                key={p.id}
+                product={{
+                  id: p.id,
+                  title: p.title,
+                  slug: p.slug,
+                  price: p.price,
+                  compareAtPrice: p.compareAtPrice,
+                  images: p.images.map((img) => ({ url: img.url, altText: img.altText })),
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

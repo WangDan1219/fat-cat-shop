@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
       compareAtPrice: parsed.compareAtPrice ?? null,
       categoryId: parsed.categoryId ?? null,
       tags: parsed.tags ?? null,
+      stock: parsed.stock ?? null,
       createdAt: now,
       updatedAt: now,
     };

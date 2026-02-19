@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
-import { products } from "@/lib/db/schema";
+import { categories, products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { ProductCard } from "@/components/storefront/product-card";
+import { ProductSearch } from "@/components/storefront/product-search";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -12,11 +12,36 @@ export const metadata: Metadata = {
 };
 
 export default async function ProductsPage() {
-  const allProducts = await db.query.products.findMany({
-    where: eq(products.status, "active"),
-    with: { images: true },
-    orderBy: (products, { desc }) => [desc(products.createdAt)],
-  });
+  const [allProducts, allCategories] = await Promise.all([
+    db.query.products.findMany({
+      where: eq(products.status, "active"),
+      with: { images: true, category: true },
+      orderBy: (products, { desc }) => [desc(products.createdAt)],
+    }),
+    db.query.categories.findMany({
+      orderBy: (c, { asc }) => [asc(c.sortOrder)],
+    }),
+  ]);
+
+  const mappedProducts = allProducts.map((product) => ({
+    id: product.id,
+    title: product.title,
+    slug: product.slug,
+    price: product.price,
+    compareAtPrice: product.compareAtPrice,
+    categoryId: product.categoryId,
+    categoryName: product.category?.name ?? null,
+    images: product.images.map((img) => ({
+      url: img.url,
+      altText: img.altText,
+    })),
+  }));
+
+  const mappedCategories = allCategories.map((c) => ({
+    id: c.id,
+    name: c.name,
+    slug: c.slug,
+  }));
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -25,26 +50,7 @@ export default async function ProductsPage() {
         Browse our collection of premium cat products.
       </p>
 
-      <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {allProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={{
-              ...product,
-              images: product.images.map((img) => ({
-                url: img.url,
-                altText: img.altText,
-              })),
-            }}
-          />
-        ))}
-      </div>
-
-      {allProducts.length === 0 && (
-        <p className="mt-16 text-center font-bold text-comic-ink/50">
-          No products available yet. Check back soon!
-        </p>
-      )}
+      <ProductSearch products={mappedProducts} categories={mappedCategories} />
     </div>
   );
 }

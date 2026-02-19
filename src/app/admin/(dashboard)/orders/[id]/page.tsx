@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
 import { OrderStatusUpdater } from "@/components/admin/order-status-updater";
 import { OrderTimeline } from "@/components/admin/order-timeline";
+import { OrderNoteEditor } from "@/components/admin/order-note-editor";
 import Link from "next/link";
 
 interface OrderDetailPageProps {
@@ -134,6 +135,9 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             currentStatus={order.status}
             paymentStatus={order.paymentStatus}
           />
+
+          {/* Order Note */}
+          <OrderNoteEditor orderId={order.id} initialNote={order.note} />
 
           {/* Customer Info */}
           <div className="rounded-xl bg-white p-6 shadow-sm">

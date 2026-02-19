@@ -1,6 +1,6 @@
 import { isAuthenticated } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { AdminSidebar } from "@/components/admin/sidebar";
+import { AdminLayoutClient } from "@/components/admin/admin-layout-client";
 
 export default async function AdminDashboardLayout({
   children,
@@ -12,10 +12,5 @@ export default async function AdminDashboardLayout({
     redirect("/admin/login");
   }
 
-  return (
-    <div className="flex h-screen bg-warm-gray">
-      <AdminSidebar />
-      <main className="flex-1 overflow-auto p-6 lg:p-8">{children}</main>
-    </div>
-  );
+  return <AdminLayoutClient>{children}</AdminLayoutClient>;
 }

@@ -11,6 +11,7 @@ const navItems = [
   { href: "/admin/products", label: "Products", icon: "package" },
   { href: "/admin/orders", label: "Orders", icon: "clipboard", showBadge: true },
   { href: "/admin/customers", label: "Customers", icon: "users" },
+  { href: "/admin/discounts", label: "Discounts", icon: "discount" },
   { href: "/admin/appearance", label: "Appearance", icon: "palette" },
   { href: "/admin/settings", label: "Settings", icon: "settings" },
 ];
@@ -59,9 +60,19 @@ const icons: Record<string, React.ReactNode> = {
       <circle cx="12" cy="12" r="3" />
     </svg>
   ),
+  discount: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 14 15 8" /><circle cx="9.5" cy="8.5" r=".5" fill="currentColor" /><circle cx="14.5" cy="13.5" r=".5" fill="currentColor" />
+      <path d="M3 7c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.42.59l7.06 7.06a2 2 0 0 1 0 2.83L13.41 19.4a2 2 0 0 1-2.83 0L3.52 12.35A2 2 0 0 1 3 10.93z" />
+    </svg>
+  ),
 };
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  onNavClick?: () => void;
+}
+
+export function AdminSidebar({ onNavClick }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [unfulfilledCount, setUnfulfilledCount] = useState<number>(0);
@@ -100,11 +111,12 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="flex w-64 flex-col border-r border-warm-brown/10 bg-white">
+    <aside className="flex h-full w-64 flex-col border-r border-warm-brown/10 bg-white">
       <div className="flex h-16 items-center border-b border-warm-brown/10 px-6">
         <Link
           href="/admin"
           className="font-display text-xl font-bold text-teal-primary"
+          onClick={onNavClick}
         >
           Fat Cat Admin
         </Link>
@@ -121,6 +133,7 @@ export function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavClick}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 isActive
@@ -149,6 +162,7 @@ export function AdminSidebar() {
         <Link
           href="/"
           className="mb-2 flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-warm-brown/60 transition-colors hover:text-teal-primary"
+          onClick={onNavClick}
         >
           View Shop &rarr;
         </Link>

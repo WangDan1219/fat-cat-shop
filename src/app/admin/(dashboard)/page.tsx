@@ -4,6 +4,8 @@ import { count, eq, sql, inArray } from "drizzle-orm";
 import { formatPrice } from "@/lib/utils";
 import { DashboardOrderColumn } from "@/components/admin/dashboard-order-column";
 import { CancelledOrdersSection } from "@/components/admin/cancelled-orders-section";
+import { Sparkline } from "@/components/admin/sparkline";
+import { aggregateToday } from "@/lib/analytics";
 
 function toOrderCard(order: {
   id: string;
@@ -34,11 +36,20 @@ export default async function AdminDashboardPage() {
     .from(orders)
     .where(eq(orders.paymentStatus, "paid"));
 
+  await aggregateToday();
+
+  const last30Days = await db.query.analyticsDailySummary.findMany({
+    orderBy: (s, { asc }) => [asc(s.date)],
+    limit: 30,
+  });
+  const revenueData = last30Days.map((d) => d.revenue);
+  const ordersData = last30Days.map((d) => d.ordersCount);
+
   const stats = [
     { label: "Products", value: productCount.count.toString() },
-    { label: "Orders", value: orderCount.count.toString() },
+    { label: "Orders", value: orderCount.count.toString(), sparklineData: ordersData, sparklineColor: "#f59e0b" },
     { label: "Customers", value: customerCount.count.toString() },
-    { label: "Revenue", value: formatPrice(revenueResult.total) },
+    { label: "Revenue", value: formatPrice(revenueResult.total), sparklineData: revenueData, sparklineColor: "#0d9488" },
   ];
 
   const [unfulfilledOrders, shippedOrders, deliveredOrders, cancelledOrders] =
@@ -105,6 +116,13 @@ export default async function AdminDashboardPage() {
             <p className="mt-1 font-display text-2xl font-bold text-warm-brown">
               {stat.value}
             </p>
+            {stat.sparklineData && stat.sparklineData.length >= 2 && (
+              <Sparkline
+                data={stat.sparklineData}
+                color={stat.sparklineColor}
+                className="mt-2 h-6 w-full"
+              />
+            )}
           </div>
         ))}
       </div>

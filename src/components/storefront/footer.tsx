@@ -12,7 +12,7 @@ export function Footer({
   return (
     <footer className="border-t-3 border-comic-ink bg-comic-cyan">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-6">
           <Link
             href="/"
             className="font-display text-xl font-bold text-comic-on-secondary transition-transform duration-200 hover:rotate-[-2deg]"
@@ -22,14 +22,29 @@ export function Footer({
           <p className="text-center text-sm font-bold leading-relaxed text-comic-on-secondary/70">
             {tagline}
           </p>
-          <nav className="flex gap-6">
+
+          {/* Quick Links */}
+          <nav className="flex flex-wrap justify-center gap-6">
             <Link
               href="/products"
               className="cursor-pointer border-b-2 border-transparent text-sm font-bold text-comic-on-secondary/70 transition-all duration-200 hover:border-comic-on-secondary hover:text-comic-on-secondary"
             >
               Shop
             </Link>
+            <Link
+              href="/orders/track"
+              className="cursor-pointer border-b-2 border-transparent text-sm font-bold text-comic-on-secondary/70 transition-all duration-200 hover:border-comic-on-secondary hover:text-comic-on-secondary"
+            >
+              Track Order
+            </Link>
+            <Link
+              href="/cart"
+              className="cursor-pointer border-b-2 border-transparent text-sm font-bold text-comic-on-secondary/70 transition-all duration-200 hover:border-comic-on-secondary hover:text-comic-on-secondary"
+            >
+              Cart
+            </Link>
           </nav>
+
           <p className="text-xs font-bold text-comic-on-secondary/50">
             &copy; {new Date().getFullYear()} {copyrightName}. All rights reserved.
           </p>

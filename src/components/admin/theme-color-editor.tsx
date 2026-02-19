@@ -1,7 +1,6 @@
 "use client";
 
 import type { ThemeColors } from "@/lib/theme/types";
-import { useState } from "react";
 
 interface ThemeColorEditorProps {
   baseColors: ThemeColors;
@@ -72,21 +71,24 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
 }
 
 export function ThemeColorEditor({ baseColors, overrides, onChange }: ThemeColorEditorProps) {
-  const [expanded, setExpanded] = useState(false);
   const merged = { ...baseColors, ...overrides };
 
   function handleColorChange(key: keyof ThemeColors, value: string) {
-    const next = { ...overrides, [key]: value };
     if (value === baseColors[key]) {
-      delete next[key];
+      const rest = Object.fromEntries(
+        Object.entries(overrides).filter(([k]) => k !== key),
+      );
+      onChange(rest);
+    } else {
+      onChange({ ...overrides, [key]: value });
     }
-    onChange(next);
   }
 
   function handleReset(key: keyof ThemeColors) {
-    const next = { ...overrides };
-    delete next[key];
-    onChange(next);
+    const rest = Object.fromEntries(
+      Object.entries(overrides).filter(([k]) => k !== key),
+    );
+    onChange(rest);
   }
 
   const contrastPairs: { bg: keyof ThemeColors; fg: keyof ThemeColors; label: string }[] = [
@@ -97,19 +99,6 @@ export function ThemeColorEditor({ baseColors, overrides, onChange }: ThemeColor
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="font-display text-lg font-bold text-warm-brown">
-          Color Customization
-        </h3>
-        <button
-          type="button"
-          onClick={() => setExpanded(!expanded)}
-          className="cursor-pointer text-sm font-medium text-teal-primary hover:underline"
-        >
-          {expanded ? "Collapse" : "Expand editor"}
-        </button>
-      </div>
-
       {/* Contrast warnings */}
       <div className="space-y-2">
         {contrastPairs.map(({ bg, fg, label }) => {
@@ -137,51 +126,50 @@ export function ThemeColorEditor({ baseColors, overrides, onChange }: ThemeColor
         })}
       </div>
 
-      {expanded && (
-        <div className="space-y-6">
-          {COLOR_GROUPS.map((group) => (
-            <div key={group.label}>
-              <h4 className="mb-3 text-sm font-bold text-warm-brown/70">
-                {group.label}
-              </h4>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {group.tokens.map(({ key, label }) => {
-                  const isOverridden = key in overrides;
-                  return (
-                    <div
-                      key={key}
-                      className="flex items-center gap-3 rounded-lg border border-warm-brown/10 px-3 py-2"
-                    >
-                      <input
-                        type="color"
-                        value={merged[key]}
-                        onChange={(e) => handleColorChange(key, e.target.value)}
-                        className="h-8 w-8 cursor-pointer rounded border-0"
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-warm-brown">{label}</p>
-                        <p className="font-mono text-xs text-warm-brown/50">
-                          {merged[key]}
-                        </p>
-                      </div>
-                      {isOverridden && (
-                        <button
-                          type="button"
-                          onClick={() => handleReset(key)}
-                          className="cursor-pointer text-xs text-warm-brown/40 hover:text-red-500"
-                          title="Reset to preset default"
-                        >
-                          Reset
-                        </button>
-                      )}
+      <div className="space-y-6">
+        {COLOR_GROUPS.map((group) => (
+          <div key={group.label}>
+            <h4 className="mb-3 text-sm font-bold text-warm-brown/70">
+              {group.label}
+            </h4>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {group.tokens.map(({ key, label }) => {
+                const isOverridden = key in overrides;
+                return (
+                  <div
+                    key={key}
+                    className="flex items-center gap-3 rounded-lg border border-warm-brown/10 px-3 py-2"
+                  >
+                    <input
+                      type="color"
+                      value={merged[key]}
+                      onChange={(e) => handleColorChange(key, e.target.value)}
+                      className="h-8 w-8 cursor-pointer rounded border-0"
+                      aria-label={`Pick color for ${label}`}
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-warm-brown">{label}</p>
+                      <p className="font-mono text-xs text-warm-brown/50">
+                        {merged[key]}
+                      </p>
                     </div>
-                  );
-                })}
-              </div>
+                    {isOverridden && (
+                      <button
+                        type="button"
+                        onClick={() => handleReset(key)}
+                        className="cursor-pointer text-xs text-warm-brown/40 hover:text-red-500"
+                        title="Reset to preset default"
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
 
       {Object.keys(overrides).length > 0 && (
         <div className="flex items-center justify-between rounded-lg bg-amber-50 px-4 py-2 text-sm">

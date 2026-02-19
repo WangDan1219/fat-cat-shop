@@ -13,6 +13,18 @@ export const checkoutSchema = z.object({
   country: z.string().min(1, "Country is required"),
   paymentMethod: z.enum(["stripe", "cod"]),
   note: z.string().optional(),
+  discountCode: z.string().optional(),
+});
+
+export const discountCodeSchema = z.object({
+  code: z.string().min(1, "Code is required").max(50).toUpperCase(),
+  type: z.enum(["percentage", "fixed"]),
+  // For percentage: 1-100 (will be stored as basis points * 100). For fixed: positive integer cents.
+  value: z.number().int().min(1),
+  maxUses: z.number().int().min(1).nullable().optional(),
+  perCustomerLimit: z.number().int().min(1).default(1),
+  expiresAt: z.string().nullable().optional(),
+  active: z.boolean().default(true),
 });
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
@@ -26,6 +38,7 @@ export const productSchema = z.object({
   categoryId: z.string().optional().nullable(),
   status: z.enum(["active", "draft", "archived"]),
   tags: z.string().optional(),
+  stock: z.number().int().min(0).nullable().optional(),
 });
 
 export type ProductInput = z.infer<typeof productSchema>;

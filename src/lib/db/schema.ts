@@ -34,6 +34,7 @@ export const products = sqliteTable("products", {
     .notNull()
     .default("draft"),
   tags: text("tags"),
+  stock: integer("stock"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 }, (table) => ([
@@ -101,6 +102,8 @@ export const orders = sqliteTable("orders", {
   total: integer("total").notNull(),
   note: text("note"),
   shippingAddress: text("shipping_address"),
+  discountCode: text("discount_code"),
+  discountAmount: integer("discount_amount").notNull().default(0),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 }, (table) => ([
@@ -149,6 +152,35 @@ export const analyticsDailySummary = sqliteTable("analytics_daily_summary", {
   pageViews: integer("page_views").notNull().default(0),
   ordersCount: integer("orders_count").notNull().default(0),
   revenue: integer("revenue").notNull().default(0),
+});
+
+export const discountCodes = sqliteTable("discount_codes", {
+  id: text("id").primaryKey(),
+  code: text("code").notNull().unique(),
+  type: text("type", { enum: ["percentage", "fixed"] }).notNull(),
+  // For percentage: value in basis points (1000 = 10%). For fixed: value in cents.
+  value: integer("value").notNull(),
+  maxUses: integer("max_uses"),
+  usedCount: integer("used_count").notNull().default(0),
+  perCustomerLimit: integer("per_customer_limit").notNull().default(1),
+  expiresAt: text("expires_at"),
+  active: integer("active", { mode: "boolean" }).notNull().default(true),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+}, (table) => ([
+  uniqueIndex("idx_discount_codes_code").on(table.code),
+]));
+
+export const discountCodeUses = sqliteTable("discount_code_uses", {
+  id: text("id").primaryKey(),
+  codeId: text("code_id")
+    .notNull()
+    .references(() => discountCodes.id, { onDelete: "cascade" }),
+  customerEmail: text("customer_email").notNull(),
+  orderId: text("order_id")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  usedAt: text("used_at").notNull(),
 });
 
 export const siteSettings = sqliteTable("site_settings", {
@@ -215,5 +247,16 @@ export const orderStatusHistoryRelations = relations(orderStatusHistory, ({ one 
   order: one(orders, {
     fields: [orderStatusHistory.orderId],
     references: [orders.id],
+  }),
+}));
+
+export const discountCodesRelations = relations(discountCodes, ({ many }) => ({
+  uses: many(discountCodeUses),
+}));
+
+export const discountCodeUsesRelations = relations(discountCodeUses, ({ one }) => ({
+  code: one(discountCodes, {
+    fields: [discountCodeUses.codeId],
+    references: [discountCodes.id],
   }),
 }));
